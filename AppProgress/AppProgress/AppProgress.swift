@@ -329,6 +329,10 @@ class AppProgress {
         }
     }
     
+    private static var isHavingAnimationKey: Bool {
+        return markView?.layer.animationKeys()?.filter({$0 == loadingAnimationKey}).count ?? 0 > 0
+    }
+    
     private static func displayAnimation(
         type: MarkType
         , view: UIView
@@ -339,7 +343,7 @@ class AppProgress {
         
         let settingInfo = SettingInfomation(mark: type, string: string)
         
-        if _settingInfo?.isEqual(setting: settingInfo) ?? false {
+        if _settingInfo?.isEqual(setting: settingInfo) ?? false && isHavingAnimationKey == _isRotationAnimation {
             if let backgroundView = backgroundView {
                 backgroundView.superview?.bringSubview(toFront: backgroundView)
             }
@@ -349,7 +353,7 @@ class AppProgress {
         
         let isDisplaying = backgroundView != nil
         
-        remove(isReleaseMarkView: !(_settingInfo?.isEqualImage(setting: settingInfo) ?? false))
+        remove(isReleaseMarkView: !(_settingInfo?.isEqualImage(setting: settingInfo) ?? false && isHavingAnimationKey == _isRotationAnimation))
         
         _settingInfo = settingInfo
         prepare(view: view, keyboardHeight: keyboardHeight)
@@ -375,9 +379,9 @@ class AppProgress {
     private static func displayRotationAnimation(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat) {
         let isEqualImage = _settingInfo?.isEqualImage(setting: SettingInfomation(mark: type, string: string)) ?? false
         
+        _isRotationAnimation = true
         displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, animations: {
             if !isEqualImage || !_isRotationAnimation {
-                _isRotationAnimation = true
                 markView?.rotationAnimation(forKey: loadingAnimationKey)
             }
         }, completion: { finished in
@@ -390,11 +394,12 @@ class AppProgress {
             return max(TimeInterval(string.characters.count) * TimeInterval(0.06) + TimeInterval(0.5), minimumDismissTimeInterval)
         }
         
+        _isRotationAnimation = false
         displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, animations: {
             
         }, completion: { finished in
             delayStart(second: dismissTimeInterval(string: string), animations: {() -> Void in
-                if _settingInfo?.isEqual(setting: SettingInfomation(mark: type, string: string)) ?? false {
+                if _settingInfo?.isEqual(setting: SettingInfomation(mark: type, string: string)) ?? false && isHavingAnimationKey == _isRotationAnimation {
                     dismiss()
                 }
             })
@@ -591,21 +596,7 @@ class AppProgress {
         NotificationCenter.default.addObserver(
             self
             , selector: #selector(self.setPositionForKeyboard(notification:))
-            , name: NSNotification.Name.UIKeyboardDidHide
-            , object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self
-            , selector: #selector(self.setPositionForKeyboard(notification:))
             , name: NSNotification.Name.UIKeyboardWillShow
-            , object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self
-            , selector: #selector(self.setPositionForKeyboard(notification:))
-            , name: NSNotification.Name.UIKeyboardDidShow
             , object: nil
         )
     }
@@ -634,13 +625,38 @@ class AppProgress {
         
         let keyboardAnimationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0
         
-        backgroundView?.removeConstraint(centerYMarkLayoutConstraint)
-        
         let constant = constatnt_CenterYMarkLayoutConstraint(keyboardHeight: keyboardHeight)
+        
         if scheduleConstant ?? centerYMarkLayoutConstraint.constant != constant {
             scheduleConstant = constant
             
+            //キーボードが出たまま前のViewControllerに戻った時の動きが不自然であったためこちらに変更
+            let last = Int(keyboardAnimationDuration / 0.005)
+            let diff = constant - centerYMarkLayoutConstraint.constant
+            let endConstant = constant
+            
+            if last >= 1 {
+                for i in 1...last {
+                    delayStart(second: (keyboardAnimationDuration / TimeInterval(last)) * TimeInterval(i), animations: {
+                        //割り切れない場合に微妙に値が変わるためIntにする
+                        if Int(centerYMarkLayoutConstraint.constant + (diff / CGFloat(last)) * CGFloat(last - i + 1)) == Int(endConstant), let scheduleConstant = scheduleConstant, scheduleConstant == endConstant {
+                            centerYMarkLayoutConstraint.constant += diff / CGFloat(last)
+                            if i == last {
+                                self.scheduleConstant = nil
+                            }
+                        }else {
+                            //他で変更があればここでは変更しない
+                            scheduleConstant = nil
+                        }
+                    })
+                }
+            }else {
+                centerYMarkLayoutConstraint.constant = constant
+            }
+            
+            /*
             UIView.animate(withDuration: keyboardAnimationDuration, delay: 0, options: [.allowUserInteraction], animations: {
+                
                 if let scheduleConstant = scheduleConstant, scheduleConstant == constant {
                     backgroundView?.frame.origin.y = (backgroundView?.superview?.center.y ?? 0) + constant - ((backgroundView?.frame.size.height ?? 0) / 2)
                 }
@@ -650,8 +666,8 @@ class AppProgress {
                 }
                 
                 scheduleConstant = nil
-                backgroundView?.superview?.addConstraint(centerYMarkLayoutConstraint)
             })
+            */
         }
     }
     

@@ -75,12 +75,6 @@ extension AppProgress {
         }
         
         for view in views {
-            for child in view.subviews {
-                print(child.bounds.height)
-            }
-        }
-        
-        for view in views {
             if let peripheralHostView = NSClassFromString("UIPeripheralHostView"), let keyboard = NSClassFromString("UIKeyboard"), view.isKind(of: peripheralHostView) || view.isKind(of: keyboard) {
                 return view.bounds.height
             }else if let inputSetContainerView = NSClassFromString("UIInputSetContainerView"), view.self.isKind(of: inputSetContainerView) {
