@@ -1,8 +1,7 @@
 //
 //  AppDelegate.swift
-//  AppProgress
 //
-//  Created by 大國 嗣元 on 2016/11/04.
+//  Created by hideyuki okuni on 2016/11/04.
 //  Copyright © 2016年 hideyuki. All rights reserved.
 //
 

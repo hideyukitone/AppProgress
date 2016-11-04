@@ -12,6 +12,10 @@
 		87661C391DCC77B20001080D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87661C371DCC77B20001080D /* Main.storyboard */; };
 		87661C3B1DCC77B20001080D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87661C3A1DCC77B20001080D /* Assets.xcassets */; };
 		87661C3E1DCC77B20001080D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87661C3C1DCC77B20001080D /* LaunchScreen.storyboard */; };
+		87661C481DCC77DC0001080D /* AppProgress+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C461DCC77DC0001080D /* AppProgress+.swift */; };
+		87661C491DCC77DC0001080D /* AppProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C471DCC77DC0001080D /* AppProgress.swift */; };
+		87661C501DCC823B0001080D /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C4F1DCC823B0001080D /* SecondViewController.swift */; };
+		87661C521DCC83130001080D /* ThirdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C511DCC83130001080D /* ThirdViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +26,10 @@
 		87661C3A1DCC77B20001080D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		87661C3D1DCC77B20001080D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		87661C3F1DCC77B20001080D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		87661C461DCC77DC0001080D /* AppProgress+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppProgress+.swift"; sourceTree = "<group>"; };
+		87661C471DCC77DC0001080D /* AppProgress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppProgress.swift; sourceTree = "<group>"; };
+		87661C4F1DCC823B0001080D /* SecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		87661C511DCC83130001080D /* ThirdViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThirdViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +43,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		875ADE2C1DCCB7E5002693BF /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				87661C331DCC77B20001080D /* AppDelegate.swift */,
+				87661C351DCC77B20001080D /* ViewController.swift */,
+				87661C4F1DCC823B0001080D /* SecondViewController.swift */,
+				87661C511DCC83130001080D /* ThirdViewController.swift */,
+			);
+			name = ViewController;
+			sourceTree = "<group>";
+		};
 		87661C271DCC77B20001080D = {
 			isa = PBXGroup;
 			children = (
@@ -54,12 +73,21 @@
 		87661C321DCC77B20001080D /* AppProgress */ = {
 			isa = PBXGroup;
 			children = (
-				87661C331DCC77B20001080D /* AppDelegate.swift */,
-				87661C351DCC77B20001080D /* ViewController.swift */,
+				87661C451DCC77DC0001080D /* AppProgress */,
+				875ADE2C1DCCB7E5002693BF /* ViewController */,
 				87661C371DCC77B20001080D /* Main.storyboard */,
 				87661C3A1DCC77B20001080D /* Assets.xcassets */,
 				87661C3C1DCC77B20001080D /* LaunchScreen.storyboard */,
 				87661C3F1DCC77B20001080D /* Info.plist */,
+			);
+			path = AppProgress;
+			sourceTree = "<group>";
+		};
+		87661C451DCC77DC0001080D /* AppProgress */ = {
+			isa = PBXGroup;
+			children = (
+				87661C461DCC77DC0001080D /* AppProgress+.swift */,
+				87661C471DCC77DC0001080D /* AppProgress.swift */,
 			);
 			path = AppProgress;
 			sourceTree = "<group>";
@@ -138,6 +166,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				87661C361DCC77B20001080D /* ViewController.swift in Sources */,
+				87661C481DCC77DC0001080D /* AppProgress+.swift in Sources */,
+				87661C491DCC77DC0001080D /* AppProgress.swift in Sources */,
+				87661C501DCC823B0001080D /* SecondViewController.swift in Sources */,
+				87661C521DCC83130001080D /* ThirdViewController.swift in Sources */,
 				87661C341DCC77B20001080D /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -263,6 +295,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = M2CCPT32P8;
 				INFOPLIST_FILE = AppProgress/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgress;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -276,6 +309,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = M2CCPT32P8;
 				INFOPLIST_FILE = AppProgress/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgress;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -302,6 +336,7 @@
 				87661C441DCC77B20001080D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
