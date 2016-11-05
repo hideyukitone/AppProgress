@@ -635,9 +635,37 @@ class AppProgress {
             let diff = constant - centerYMarkLayoutConstraint.constant
             let endConstant = constant
             
+            func animationTimeInterval(total: TimeInterval, now: Int, last: Int) -> TimeInterval {
+                //途中に加速してよりアニメーションらしい動きにしています。
+                guard 1 <= now && now <= last else {
+                    return 0
+                }
+                
+                let avg = (total / TimeInterval(last))
+                
+                let hiStart = (last / 12) + 1
+                let slowStart = last - (last / 12) + 1
+                
+                let slowTimeInterval = TimeInterval(avg * 2)
+                let slowCount = hiStart - 1 + last - slowStart + 1
+                let hiTimeInterval = (total - slowTimeInterval * TimeInterval(slowCount)) / TimeInterval(last - slowCount)
+                
+                var rtn: TimeInterval = 0
+                for i in 1...now {
+                    switch i {
+                    case let int where (1 <= int && int < hiStart) || slowStart <= int:
+                        rtn += slowTimeInterval
+                    default:
+                        rtn += hiTimeInterval
+                    }
+                }
+                
+                return rtn
+            }
+            
             if last >= 1 {
                 for i in 1...last {
-                    delayStart(second: (keyboardAnimationDuration / TimeInterval(last)) * TimeInterval(i), animations: {
+                    delayStart(second: animationTimeInterval(total: keyboardAnimationDuration, now: i, last: last), animations: {
                         //割り切れない場合に微妙に値が変わるためIntにする
                         if Int(centerYMarkLayoutConstraint.constant + (diff / CGFloat(last)) * CGFloat(last - i + 1)) == Int(endConstant), let scheduleConstant = scheduleConstant, scheduleConstant == endConstant {
                             centerYMarkLayoutConstraint.constant += diff / CGFloat(last)
