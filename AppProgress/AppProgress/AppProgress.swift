@@ -646,7 +646,7 @@ class AppProgress {
                 let hiStart = (last / 12) + 1
                 let slowStart = last - (last / 12) + 1
                 
-                let slowTimeInterval = TimeInterval(avg * 2)
+                let slowTimeInterval = TimeInterval(avg * 2.5)
                 let slowCount = hiStart - 1 + last - slowStart + 1
                 let hiTimeInterval = (total - slowTimeInterval * TimeInterval(slowCount)) / TimeInterval(last - slowCount)
                 
