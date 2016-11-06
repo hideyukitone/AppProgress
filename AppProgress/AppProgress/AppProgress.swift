@@ -44,15 +44,15 @@ open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
     //EditableAppProgressProperty
     
     open static func setColorType(type: AppProgressColor) {
-        appProgressUI.colorType = type
+        appProgressUI.setColorType(type: type)
     }
     
     open static func setBackgroundStyle(style: AppProgressBackgroundStyle) {
-        appProgressUI.backgroundStyle = style
+        appProgressUI.setBackgroundStyle(style: style)
     }
     
     open static func setMinimumDismissTimeInterval(timeInterval: TimeInterval) {
-        appProgressUI.minimumDismissTimeInterval = timeInterval
+        appProgressUI.setMinimumDismissTimeInterval(timeInterval: timeInterval)
     }
 }
 
@@ -137,10 +137,6 @@ fileprivate class AppProgressUI {
     var backgroundView: BackgroundView?
     var stringLabel: StringLabel?
     
-    var colorType = AppProgressColor.blackAndWhite
-    var backgroundStyle = AppProgressBackgroundStyle.basic
-    var minimumDismissTimeInterval: TimeInterval = 0.5
-    
     func displayRotationAnimation(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat) {
         let isEqualImage = _settingInfo?.isEqualImage(setting: SettingInfomation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)) ?? false
         
@@ -179,6 +175,22 @@ fileprivate class AppProgressUI {
             NotificationCenter.default.removeObserver(self)
         })
     }
+    
+    func setColorType(type: AppProgressColor) {
+        colorType = type
+    }
+    
+    func setBackgroundStyle(style: AppProgressBackgroundStyle) {
+        backgroundStyle = style
+    }
+    
+    func setMinimumDismissTimeInterval(timeInterval: TimeInterval) {
+        minimumDismissTimeInterval = timeInterval
+    }
+    
+    private var colorType = AppProgressColor.blackAndWhite
+    private var backgroundStyle = AppProgressBackgroundStyle.basic
+    private var minimumDismissTimeInterval: TimeInterval = 0.5
     
     private let fadeInAnimationDuration: TimeInterval = 0.15
     private let fadeOutAnimationDuration: TimeInterval = 0.15
@@ -552,18 +564,15 @@ fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
         self.tintColor = tintColor
     }
     
-    private var forKey: String {
-        return "loadingAnimation"
-    }
+    private var forKey = "loadingAnimation"
     
-    func startRotation(duration: CFTimeInterval = 5.6) {
+    func startRotation() {
         self.stopRotation()
         
         let animation = CABasicAnimation(keyPath: "transform.rotation")
-        
         animation.fromValue = 0
-        animation.toValue = self.frame.size.width / 2
-        animation.duration = duration
+        animation.toValue = CGFloat(M_PI) * 2
+        animation.duration = 1.17
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
         animation.repeatCount = MAXFLOAT
         animation.isCumulative = true
@@ -628,7 +637,7 @@ fileprivate class StringLabel: UILabel, ReleaseAvility {
 //****************************************************
 
 fileprivate protocol RotationAvility {
-    func startRotation(duration: CFTimeInterval)
+    func startRotation()
     func stopRotation()
     var isRotationing: Bool { get }
 }
