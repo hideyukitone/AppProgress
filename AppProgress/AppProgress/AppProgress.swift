@@ -665,17 +665,12 @@ fileprivate extension ReleaseAvility where Self: UIView {
     func releaseAll() {
         self.removeFromSuperview()
         self.isHidden = true
-    }
-}
-
-fileprivate extension ReleaseAvility where Self: MarkView {
-    func releaseAll() {
-        self.stopRotation()
-        self.removeFromSuperview()
-        self.isHidden = true
-        self.image = nil
-        self.animationImages = nil
-        self.stopAnimating()
+        
+        if let imageView = self as? UIImageView {
+            imageView.stopAnimating()
+            imageView.image = nil
+            imageView.animationImages = nil
+        }
     }
 }
 
