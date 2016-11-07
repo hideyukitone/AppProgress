@@ -763,15 +763,14 @@ fileprivate enum MarkType {
     private var doneImage: UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         
-        let space: CGFloat = 14.7
-        
         let path = UIBezierPath()
-        path.move(to: CGPoint(x: space - 2.1, y: space + 17.6))
-        path.addLine(to: CGPoint(x: space + 8.5, y: size.height - space - 2))
+        
+        path.move(to: CGPoint(x: 12.6, y: 32.3))
+        path.addLine(to: CGPoint(x: 23.2, y: 43.3))
         path.close()
         
-        path.move(to: CGPoint(x: space + 7.5, y: size.height - space - 2))
-        path.addLine(to: CGPoint(x: size.width - space + 1.84, y: space + 3.8))
+        path.move(to: CGPoint(x: 22.2, y: 43.3))
+        path.addLine(to: CGPoint(x: 47.14, y: 18.5))
         path.close()
         
         UIColor.black.setStroke()
@@ -791,6 +790,7 @@ fileprivate enum MarkType {
         let space: CGFloat = 14.7
         
         let path = UIBezierPath()
+        
         path.move(to: CGPoint(x: space, y: space))
         path.addLine(to: CGPoint(x: size.width - space, y: size.height - space))
         path.close()
@@ -816,9 +816,10 @@ fileprivate enum MarkType {
         let space: CGFloat = 6
         let bounds = CGRect(x: space, y: space, width: size.width - space * 2, height: size.height - space * 2)
         let center = CGPoint(x: bounds.origin.x + bounds.size.width / 2, y: bounds.origin.y + bounds.size.height / 2)
-        
         let radius = min(bounds.size.width, bounds.size.height) / 2
+        
         let path = UIBezierPath()
+        
         path.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: ((CGFloat(M_PI) * 2) / 200) * 175, clockwise: true)
         
         UIColor.black.setStroke()
