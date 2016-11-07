@@ -157,7 +157,10 @@ fileprivate class AppProgressUI {
         
         _isRotationAnimation = false
         displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, animations: {
-            
+            if let count = self.markView?.animationImages?.count, count > 0 {
+                self.markView?.animationDuration = self.fadeInAnimationDuration
+                self.markView?.startAnimating()
+            }
         }, completion: { finished in
             self.delayStart(second: dismissTimeInterval(string: string), animations: {() -> Void in
                 if self._settingInfo?.isEqual(setting: SettingInfomation(mark: type, string: string, colorType: self.colorType, backgroundStyle: self.backgroundStyle)) ?? false && (self.markView?.isRotationing ?? false) == self._isRotationAnimation {
@@ -269,9 +272,7 @@ fileprivate class AppProgressUI {
         
         //同じ画像が呼ばれた時はアニメーションを継続するために解放しない
         if isReleaseMarkView {
-            markView?.stopRotation()
             markView?.releaseAll()
-            markView?.image = nil
             markView = nil
             
             _isRotationAnimation = false
@@ -560,7 +561,21 @@ fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
     }
     
     init(type: MarkType, tintColor: UIColor?) {
-        super.init(image: type.image)
+        let images = type.images(tintColor: tintColor)
+        
+        if images.count >= 1 {
+            if images.count == 1 {
+                super.init(image: images.first)
+            }else {
+                super.init(image: images.last)
+                self.animationImages = images
+                self.animationRepeatCount = 1
+                self.tintColor = tintColor
+            }
+        }else {
+           super.init(image: nil)
+        }
+        
         self.tintColor = tintColor
     }
     
@@ -653,6 +668,17 @@ fileprivate extension ReleaseAvility where Self: UIView {
     }
 }
 
+fileprivate extension ReleaseAvility where Self: MarkView {
+    func releaseAll() {
+        self.stopRotation()
+        self.removeFromSuperview()
+        self.isHidden = true
+        self.image = nil
+        self.animationImages = nil
+        self.stopAnimating()
+    }
+}
+
 fileprivate protocol ShowAppProgressAvility {
     static func show(view: UIView, string: String, keyboardHeight: CGFloat)
     static func done(view: UIView, string: String, keyboardHeight: CGFloat)
@@ -683,18 +709,18 @@ fileprivate enum MarkType {
         return CGSize(width: 60, height: 60)
     }
     
-    var image: UIImage? {
+    func images(tintColor: UIColor?) -> [UIImage] {
         switch self {
         case .loading:
-            return loadingImage?.withRenderingMode(.alwaysTemplate)
+            return [loadingImage(tintColor: tintColor)].flatMap{$0}
         case .err:
-            return errImage?.withRenderingMode(.alwaysTemplate)
+            return [errImage(tintColor: tintColor)].flatMap{$0}
         case .done:
-            return doneImage?.withRenderingMode(.alwaysTemplate)
+            return doneImages(tintColor: tintColor)
         case .info:
-            return infoImage?.withRenderingMode(.alwaysTemplate)
+            return [infoImage(tintColor: tintColor)].flatMap{$0}
         case .custom(let image, let mode):
-            return image?.withRenderingMode(mode)
+            return [image?.withRenderingMode(mode)].flatMap{$0}
         }
     }
     
@@ -725,7 +751,7 @@ fileprivate enum MarkType {
         return false
     }
     
-    private var infoImage: UIImage? {
+    private func infoImage(tintColor: UIColor?) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         
         let space: CGFloat = 13
@@ -747,7 +773,7 @@ fileprivate enum MarkType {
         path.addLine(to: CGPoint(x: center.x, y: size.height - space - topSpace))
         path.close()
         
-        UIColor.black.setStroke()
+        tintColor?.setStroke()
         
         path.lineJoinStyle = .round
         path.lineCapStyle = .round
@@ -757,34 +783,99 @@ fileprivate enum MarkType {
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        return image
+        return image?.withRenderingMode(.alwaysTemplate)
     }
     
-    private var doneImage: UIImage? {
-        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+    private func doneImages(tintColor: UIColor?) -> [UIImage] {
+        enum LineType {
+            case left(CGFloat)
+            case leftEnd
+            case right(CGFloat)
+            case rightEnd
+            
+            static var leftStartx: CGFloat {
+                return 12.6
+            }
+            
+            static var leftEndx: CGFloat {
+                return 23.2
+            }
+            
+            static var rightStartx: CGFloat {
+                return 22.2
+            }
+            
+            static var rightEndx: CGFloat {
+                return 47.14
+            }
+            
+            func addLine(path: UIBezierPath) {
+                switch self {
+                case .left(let x):
+                    addLineLeft(path: path, x: x)
+                case .leftEnd:
+                    addLineLeft(path: path, x: LineType.leftEndx)
+                case .right(let x):
+                    addLineLeft(path: path, x: LineType.leftEndx)
+                    addLineRight(path: path, x: x)
+                case .rightEnd:
+                    addLineLeft(path: path, x: LineType.leftEndx)
+                    addLineRight(path: path, x: LineType.rightEndx)
+                }
+            }
+            
+            private func addLineLeft(path: UIBezierPath, x: CGFloat) {
+                path.move(to: leftDoneImagePoint(x: LineType.leftStartx))
+                path.addLine(to: leftDoneImagePoint(x: x))
+                path.close()
+            }
+            
+            private func addLineRight(path: UIBezierPath, x: CGFloat) {
+                path.move(to: rightDoneImagePoint(x: LineType.rightStartx))
+                path.addLine(to: rightDoneImagePoint(x: x))
+                path.close()
+            }
+            
+            private func leftDoneImagePoint(x: CGFloat) -> CGPoint {
+                return CGPoint(x: x, y: (11 / 10.6) * (x - 12.6) + 32.3)
+            }
+            
+            private func rightDoneImagePoint(x: CGFloat) -> CGPoint {
+                return CGPoint(x: x, y: (-24.8 / 24.94) * (x - 22.2) + 43.3)
+            }
+        }
         
-        let path = UIBezierPath()
+        func doneImage(tintColor: UIColor?, lineType: LineType) -> UIImage? {
+            UIGraphicsBeginImageContextWithOptions(size, false, 0)
+            
+            let path = UIBezierPath()
+            
+            lineType.addLine(path: path)
+            
+            tintColor?.setStroke()
+            
+            path.lineWidth = 2
+            path.stroke()
+            
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            return image?.withRenderingMode(.alwaysTemplate)
+        }
         
-        path.move(to: CGPoint(x: 12.6, y: 32.3))
-        path.addLine(to: CGPoint(x: 23.2, y: 43.3))
-        path.close()
+        let leftCount: CGFloat = 20
+        let diffLeft = (LineType.leftEndx - LineType.leftStartx) / leftCount
         
-        path.move(to: CGPoint(x: 22.2, y: 43.3))
-        path.addLine(to: CGPoint(x: 47.14, y: 18.5))
-        path.close()
+        let rightCount: CGFloat = 20
+        let diffRight = (LineType.rightEndx - LineType.rightStartx) / rightCount
         
-        UIColor.black.setStroke()
+        let lineLeftTypes = (1...(Int(leftCount) - 1)).map{LineType.left(LineType.leftStartx + CGFloat($0) * diffLeft)} + [LineType.leftEnd]
+        let lineRightTypes = (1...(Int(rightCount) - 1)).map{LineType.right(LineType.rightStartx + CGFloat($0) * diffRight)} + [LineType.rightEnd]
         
-        path.lineWidth = 2
-        path.stroke()
-        
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return image
+        return (lineLeftTypes + lineRightTypes).flatMap{doneImage(tintColor: tintColor, lineType: $0)}
     }
     
-    private var errImage: UIImage? {
+    private func errImage(tintColor: UIColor?) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         
         let space: CGFloat = 14.7
@@ -799,7 +890,7 @@ fileprivate enum MarkType {
         path.addLine(to: CGPoint(x: size.width - space, y: space))
         path.close()
         
-        UIColor.black.setStroke()
+        tintColor?.setStroke()
         
         path.lineWidth = 2
         path.stroke()
@@ -807,10 +898,10 @@ fileprivate enum MarkType {
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        return image
+        return image?.withRenderingMode(.alwaysTemplate)
     }
     
-    private var loadingImage: UIImage? {
+    private func loadingImage(tintColor: UIColor?) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         
         let space: CGFloat = 6
@@ -822,7 +913,7 @@ fileprivate enum MarkType {
         
         path.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: ((CGFloat(M_PI) * 2) / 200) * 175, clockwise: true)
         
-        UIColor.black.setStroke()
+        tintColor?.setStroke()
         
         path.lineWidth = 2
         path.stroke()
@@ -830,7 +921,7 @@ fileprivate enum MarkType {
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        return image
+        return image?.withRenderingMode(.alwaysTemplate)
     }
 }
 
