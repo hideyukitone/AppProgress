@@ -132,7 +132,7 @@ public enum AppProgressBackgroundStyle {
 // MARK: - AppProgressUI
 //****************************************************
 
-fileprivate class AppProgressUI {
+fileprivate class AppProgressUI: DelayAvility {
     var markView: MarkView?
     var backgroundView: BackgroundView?
     var stringLabel: StringLabel?
@@ -140,9 +140,8 @@ fileprivate class AppProgressUI {
     func displayRotationAnimation(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat) {
         let isEqualImage = _settingInfo?.isEqualImage(setting: SettingInfomation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)) ?? false
         
-        _isRotationAnimation = true
-        displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, animations: {
-            if !isEqualImage || !self._isRotationAnimation {
+        displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, isRotation: true, animations: {
+            if !isEqualImage || !(self.markView?.isRotationing ?? false) {
                 self.markView?.startRotation()
             }
         }, completion: { finished in
@@ -155,15 +154,15 @@ fileprivate class AppProgressUI {
             return max(TimeInterval(string.characters.count) * TimeInterval(0.06) + TimeInterval(0.5), minimumDismissTimeInterval)
         }
         
-        _isRotationAnimation = false
-        displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, animations: {
+        displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, isRotation: false, animations: {
             if let count = self.markView?.animationImages?.count, count > 0 {
                 self.markView?.animationDuration = self.fadeInAnimationDuration
                 self.markView?.startAnimating()
             }
         }, completion: { finished in
+            let dismissId = self._settingInfo?.id
             self.delayStart(second: dismissTimeInterval(string: string), animations: {() -> Void in
-                if self._settingInfo?.isEqual(setting: SettingInfomation(mark: type, string: string, colorType: self.colorType, backgroundStyle: self.backgroundStyle)) ?? false && (self.markView?.isRotationing ?? false) == self._isRotationAnimation {
+                if let id = self._settingInfo?.id , id == dismissId {
                     self.dismiss()
                 }
             })
@@ -198,9 +197,9 @@ fileprivate class AppProgressUI {
     private let fadeInAnimationDuration: TimeInterval = 0.15
     private let fadeOutAnimationDuration: TimeInterval = 0.15
     
-    private var _isRotationAnimation = false
     private var _settingInfo: SettingInfomation?
     private struct SettingInfomation {
+        let id = UUID().uuidString
         let mark: MarkType
         let string: String
         let colorType: AppProgressColor
@@ -227,12 +226,13 @@ fileprivate class AppProgressUI {
         , view: UIView
         , string: String
         , keyboardHeight: CGFloat
+        , isRotation: Bool
         , animations: @escaping () -> Void
         , completion: @escaping () -> Void) {
         
         let settingInfo = SettingInfomation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)
         
-        if _settingInfo?.isEqual(setting: settingInfo) ?? false && (markView?.isRotationing ?? false) == _isRotationAnimation {
+        if _settingInfo?.isEqual(setting: settingInfo) ?? false && (markView?.isRotationing ?? false) == isRotation {
             if let backgroundView = backgroundView {
                 backgroundView.superview?.bringSubview(toFront: backgroundView)
             }
@@ -242,9 +242,10 @@ fileprivate class AppProgressUI {
         
         let isDisplaying = backgroundView != nil
         
-        remove(isReleaseMarkView: !(_settingInfo?.isEqualImage(setting: settingInfo) ?? false && (markView?.isRotationing ?? false) == _isRotationAnimation))
+        remove(isReleaseMarkView: !(_settingInfo?.isEqualImage(setting: settingInfo) ?? false && (markView?.isRotationing ?? false) == isRotation))
         
         _settingInfo = settingInfo
+        
         prepare(view: view, keyboardHeight: keyboardHeight)
         
         if isDisplaying {
@@ -274,8 +275,6 @@ fileprivate class AppProgressUI {
         if isReleaseMarkView {
             markView?.releaseAll()
             markView = nil
-            
-            _isRotationAnimation = false
         }
         
         backgroundView?.releaseAll()
@@ -289,13 +288,6 @@ fileprivate class AppProgressUI {
         markView?.alpha = alpha
         backgroundView?.alpha = alpha
         stringLabel?.alpha = alpha
-    }
-    
-    private func delayStart(second: Double, animations: @escaping () -> Void) {
-        let dispatchTime = DispatchTime.now() + Double(Int64(second * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-        DispatchQueue.main.asyncAfter(deadline: dispatchTime, execute: {
-            animations()
-        })
     }
     
     private func registNotifications() {
@@ -317,6 +309,13 @@ fileprivate class AppProgressUI {
         
         NotificationCenter.default.addObserver(
             self
+            , selector: #selector(self.setPosition(notification:))
+            , name: NSNotification.Name.UIDeviceOrientationDidChange
+            , object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self
             , selector: #selector(self.setPositionForKeyboard(notification:))
             , name: NSNotification.Name.UIKeyboardWillHide
             , object: nil
@@ -331,19 +330,19 @@ fileprivate class AppProgressUI {
     }
     
     @objc func setPosition(notification: NSNotification) {
-        guard let centerYMarkLayoutConstraint = centerYMarkLayoutConstraint else {
-            return
+        if let markView = markView
+            , let view = backgroundView?.superview
+            , let _settingInfo = _settingInfo
+            , let stringLabel = stringLabel {
+            stringLabel.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markView.frame.size, backgroundStyle: _settingInfo.backgroundStyle, viewSize: view.frame.size)
+            
+            backgroundView?.setAnchor(markOriginalSize: _settingInfo.mark.size, backgroundStyle: _settingInfo.backgroundStyle, stringLabel: stringLabel, keyboardHeight: nil)
+            
+            markView.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markView.frame.size, stringLabel: stringLabel)
         }
-        
-        centerYMarkLayoutConstraint.constant = constatnt_CenterYMarkLayoutConstraint(keyboardHeight: nil)
     }
     
-    private var scheduleConstant: CGFloat?
     @objc func setPositionForKeyboard(notification: NSNotification) {
-        guard let centerYMarkLayoutConstraint = centerYMarkLayoutConstraint else {
-            return
-        }
-        
         var keyboardHeight: CGFloat {
             if notification.name == NSNotification.Name.UIKeyboardDidHide || notification.name == NSNotification.Name.UIKeyboardWillHide {
                 return 0
@@ -354,104 +353,8 @@ fileprivate class AppProgressUI {
         
         let keyboardAnimationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0
         
-        let constant = constatnt_CenterYMarkLayoutConstraint(keyboardHeight: keyboardHeight)
-        
-        if scheduleConstant ?? centerYMarkLayoutConstraint.constant != constant {
-            scheduleConstant = constant
-            
-            //キーボードが出たまま前のViewControllerに戻った時の動きが不自然であったためこちらに変更
-            let last = Int(keyboardAnimationDuration / 0.005)
-            let diff = constant - centerYMarkLayoutConstraint.constant
-            let endConstant = constant
-            
-            func animationTimeInterval(total: TimeInterval, now: Int, last: Int) -> TimeInterval {
-                //途中に加速してよりアニメーションらしい動きにしています。
-                guard 1 <= now && now <= last else {
-                    return 0
-                }
-                
-                let avg = (total / TimeInterval(last))
-                
-                let hiStart = (last / 12) + 1
-                let slowStart = last - (last / 12) + 1
-                
-                let slowTimeInterval = TimeInterval(avg * 2.5)
-                let slowCount = hiStart - 1 + last - slowStart + 1
-                let hiTimeInterval = (total - slowTimeInterval * TimeInterval(slowCount)) / TimeInterval(last - slowCount)
-                
-                var rtn: TimeInterval = 0
-                for i in 1...now {
-                    switch i {
-                    case let int where (1 <= int && int < hiStart) || slowStart <= int:
-                        rtn += slowTimeInterval
-                    default:
-                        rtn += hiTimeInterval
-                    }
-                }
-                
-                return rtn
-            }
-            
-            if last >= 1 {
-                for i in 1...last {
-                    delayStart(second: animationTimeInterval(total: keyboardAnimationDuration, now: i, last: last), animations: {
-                        //割り切れない場合に微妙に値が変わるためIntにする
-                        if Int(centerYMarkLayoutConstraint.constant + (diff / CGFloat(last)) * CGFloat(last - i + 1)) == Int(endConstant), let scheduleConstant = self.scheduleConstant, scheduleConstant == endConstant {
-                            centerYMarkLayoutConstraint.constant += diff / CGFloat(last)
-                            if i == last {
-                                self.scheduleConstant = nil
-                            }
-                        }else {
-                            //他で変更があればここでは変更しない
-                            self.scheduleConstant = nil
-                        }
-                    })
-                }
-            }else {
-                centerYMarkLayoutConstraint.constant = constant
-            }
-            
-            /*
-             UIView.animate(withDuration: keyboardAnimationDuration, delay: 0, options: [.allowUserInteraction], animations: {
-             
-             if let scheduleConstant = scheduleConstant, scheduleConstant == constant {
-             backgroundView?.frame.origin.y = (backgroundView?.superview?.center.y ?? 0) + constant - ((backgroundView?.frame.size.height ?? 0) / 2)
-             }
-             }, completion: { finished in
-             if let scheduleConstant = scheduleConstant, scheduleConstant == constant {
-             centerYMarkLayoutConstraint.constant = constant
-             }
-             
-             scheduleConstant = nil
-             })
-             */
-        }
+        backgroundView?.move(keyboardHeight: keyboardHeight, keyboardAnimationDuration: keyboardAnimationDuration)
     }
-    
-    private var beforeSetKeyboardHeight: CGFloat = 0
-    private func constatnt_CenterYMarkLayoutConstraint(keyboardHeight: CGFloat?) -> CGFloat {
-        let heightSuperview = backgroundView?.superview?.frame.size.height ?? 0
-        let activeHeight = heightSuperview - (keyboardHeight ?? beforeSetKeyboardHeight)
-        let diff = heightSuperview / 2 - activeHeight / 2
-        
-        var constatntDef_CenterYMarkLayoutConstraint: CGFloat {
-            if keyboardHeight ?? beforeSetKeyboardHeight > 0 {
-                return activeHeight / 65
-            }else {
-                return activeHeight / 20
-            }
-        }
-        
-        if let keyboardHeight = keyboardHeight {
-            beforeSetKeyboardHeight = keyboardHeight
-        }
-        
-        return -constatntDef_CenterYMarkLayoutConstraint - diff
-    }
-    
-    private var widthMarkLayoutConstraint: NSLayoutConstraint?
-    private var heightMarkLayoutConstraint: NSLayoutConstraint?
-    private var centerYMarkLayoutConstraint: NSLayoutConstraint?
     
     private func prepare(view: UIView, keyboardHeight: CGFloat) {
         guard let _settingInfo = _settingInfo else {
@@ -475,81 +378,38 @@ fileprivate class AppProgressUI {
         backgroundView.addSubview(markView)
         backgroundView.addSubview(stringLabel)
         
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let size = CGSize(width: max(_settingInfo.mark.size.width, stringLabel.frame.size.width), height: _settingInfo.mark.size.height + stringLabel.frame.size.height)
-        
-        if let centerYMarkLayoutConstraint = centerYMarkLayoutConstraint {
-            backgroundView.removeConstraint(centerYMarkLayoutConstraint)
-        }
-        centerYMarkLayoutConstraint = nil
-        
-        switch backgroundStyle {
-        case .none:
-            centerYMarkLayoutConstraint = backgroundView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constatnt_CenterYMarkLayoutConstraint(keyboardHeight: keyboardHeight))
-            backgroundView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            centerYMarkLayoutConstraint?.isActive = true
-            backgroundView.widthAnchor.constraint(equalToConstant: size.width).isActive = true
-            backgroundView.heightAnchor.constraint(equalToConstant: size.height).isActive = true
-            backgroundView.backgroundColor = .clear
-        case .basic:
-            centerYMarkLayoutConstraint = backgroundView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constatnt_CenterYMarkLayoutConstraint(keyboardHeight: keyboardHeight))
-            
-            let space: CGFloat = 20
-            backgroundView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            centerYMarkLayoutConstraint?.isActive = true
-            
-            if _settingInfo.string == "" {
-                backgroundView.widthAnchor.constraint(equalToConstant: size.width + space * 2).isActive = true
-                backgroundView.heightAnchor.constraint(equalToConstant: size.height + space * 2).isActive = true
-            }else {
-                backgroundView.widthAnchor.constraint(equalToConstant: max(size.width + space * 1, _settingInfo.mark.size.width * 2)).isActive = true
-                backgroundView.heightAnchor.constraint(equalToConstant: size.height + space * 1).isActive = true
-            }
-            
-            backgroundView.layer.cornerRadius = 15
-        case .full:
-            backgroundView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        case .customFull(let top, let bottom, let leading, let trailing):
-            backgroundView.topAnchor.constraint(equalTo: view.topAnchor, constant: top).isActive = true
-            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: bottom).isActive = true
-            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leading).isActive = true
-            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: trailing).isActive = true
-        }
-        
         var markImageSize: CGSize {
-            if _settingInfo.string == "" {
+            switch backgroundStyle {
+            case .basic:
+                if _settingInfo.string == "" {
+                    return _settingInfo.mark.size
+                }else {
+                    return CGSize(width: (_settingInfo.mark.size.width / 4) * 3, height: (_settingInfo.mark.size.height / 4) * 3)
+                }
+            case .full, .none, .customFull( _, _, _, _):
                 return _settingInfo.mark.size
-            }else {
-                return CGSize(width: (_settingInfo.mark.size.width / 4) * 3, height: (_settingInfo.mark.size.height / 4) * 3)
             }
+            
         }
         
-        var spaceMarkAndLabel: CGFloat {
-            return (_settingInfo.mark.size.height - markImageSize.height) / 3
+        stringLabel.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markImageSize, backgroundStyle: _settingInfo.backgroundStyle, viewSize: view.frame.size)
+        
+        backgroundView.setAnchor(markOriginalSize: _settingInfo.mark.size, backgroundStyle: _settingInfo.backgroundStyle, stringLabel: stringLabel, keyboardHeight: keyboardHeight)
+        
+        markView.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markImageSize, stringLabel: stringLabel)
+        
+        func setUserInteractionEnabled(isEnabled: Bool) {
+            backgroundView.isUserInteractionEnabled = isEnabled
+            markView.isUserInteractionEnabled = isEnabled
+            stringLabel.isUserInteractionEnabled = isEnabled
         }
         
-        markView.translatesAutoresizingMaskIntoConstraints = false
-        markView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
-        markView.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor, constant: -stringLabel.frame.size.height / 2 - spaceMarkAndLabel).isActive = true
-        
-        if let widthMarkLayoutConstraint = widthMarkLayoutConstraint, let heightMarkLayoutConstraint = heightMarkLayoutConstraint {
-            markView.removeConstraint(widthMarkLayoutConstraint)
-            markView.removeConstraint(heightMarkLayoutConstraint)
+        switch _settingInfo.backgroundStyle {
+        case .none:
+            setUserInteractionEnabled(isEnabled: false)
+        default:
+            setUserInteractionEnabled(isEnabled: true)
         }
-        widthMarkLayoutConstraint = markView.widthAnchor.constraint(equalToConstant: markImageSize.width)
-        heightMarkLayoutConstraint = markView.heightAnchor.constraint(equalToConstant: markImageSize.height)
-        widthMarkLayoutConstraint?.isActive = true
-        heightMarkLayoutConstraint?.isActive = true
-        
-        stringLabel.translatesAutoresizingMaskIntoConstraints = false
-        stringLabel.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
-        stringLabel.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor, constant: markImageSize.height / 2 + spaceMarkAndLabel).isActive = true
-        stringLabel.widthAnchor.constraint(equalToConstant: stringLabel.frame.size.width).isActive = true
-        stringLabel.heightAnchor.constraint(equalToConstant: stringLabel.frame.size.height).isActive = true
         
         registNotifications()
     }
@@ -605,9 +465,38 @@ fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
     var isRotationing: Bool {
         return self.layer.animationKeys()?.filter({$0 == forKey}).count ?? 0 > 0
     }
+    
+    private var widthMarkLayoutConstraint: NSLayoutConstraint?
+    private var heightMarkLayoutConstraint: NSLayoutConstraint?
+    
+    func setAnchor(markOriginalSize: CGSize, markImageSize: CGSize, stringLabel: StringLabel) {
+        guard let backgroundView = self.superview else {
+            return
+        }
+        
+        var spaceMarkAndLabel: CGFloat {
+            return (markOriginalSize.height - markImageSize.height) / 3
+        }
+        
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
+        self.bottomAnchor.constraint(equalTo: stringLabel.topAnchor, constant: -spaceMarkAndLabel).isActive = true
+        
+        if let widthMarkLayoutConstraint = widthMarkLayoutConstraint, let heightMarkLayoutConstraint = heightMarkLayoutConstraint {
+            widthMarkLayoutConstraint.constant = markImageSize.width
+            heightMarkLayoutConstraint.constant = markImageSize.height
+        }else {
+            widthMarkLayoutConstraint = self.widthAnchor.constraint(equalToConstant: markImageSize.width)
+            heightMarkLayoutConstraint = self.heightAnchor.constraint(equalToConstant: markImageSize.height)
+            
+            widthMarkLayoutConstraint?.isActive = true
+            heightMarkLayoutConstraint?.isActive = true
+        }
+    }
 }
 
-fileprivate class BackgroundView: UIView, ReleaseAvility {
+fileprivate class BackgroundView: UIView, ReleaseAvility, DelayAvility {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -615,6 +504,178 @@ fileprivate class BackgroundView: UIView, ReleaseAvility {
     init(backgroundColor: UIColor?) {
         super.init(frame: .zero)
         self.backgroundColor = backgroundColor
+    }
+    
+    private var centerYLayoutConstraint: NSLayoutConstraint?
+    private var widthLayoutConstraint: NSLayoutConstraint?
+    private var heightLayoutConstraint: NSLayoutConstraint?
+    
+    func setAnchor(markOriginalSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, stringLabel: StringLabel, keyboardHeight: CGFloat?) {
+        let constant = constatnt_CenterYLayoutConstraint(keyboardHeight: keyboardHeight)
+        
+        guard let view = self.superview else {
+            return
+        }
+        
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        switch backgroundStyle {
+        case .basic:
+            let space: CGFloat = 20
+            let size = CGSize(width: max(markOriginalSize.width, stringLabel.frame.size.width), height: markOriginalSize.height + stringLabel.frame.size.height)
+            
+            var width: CGFloat {
+                if stringLabel.text == "" {
+                    return size.width + space * 2
+                }else {
+                    return max(size.width + space * 1, markOriginalSize.width * 2)
+                }
+            }
+            var height: CGFloat {
+                if stringLabel.text == "" {
+                    return size.height + space * 2
+                }else {
+                    return size.height + space * 1
+                }
+            }
+            
+            if let centerYLayoutConstraint = centerYLayoutConstraint
+                , let widthLayoutConstraint = widthLayoutConstraint
+                , let heightLayoutConstraint = heightLayoutConstraint {
+                centerYLayoutConstraint.constant = constant
+                widthLayoutConstraint.constant = width
+                heightLayoutConstraint.constant = height
+            }else {
+                centerYLayoutConstraint = self.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant)
+                centerYLayoutConstraint?.isActive = true
+                
+                widthLayoutConstraint = self.widthAnchor.constraint(equalToConstant: width)
+                widthLayoutConstraint?.isActive = true
+                heightLayoutConstraint = self.heightAnchor.constraint(equalToConstant: height)
+                heightLayoutConstraint?.isActive = true
+            }
+            
+            self.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            
+            self.layer.cornerRadius = 15
+        case .none:
+            self.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            self.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+            self.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            self.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            self.backgroundColor = .clear
+        case .full:
+            self.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            self.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+            self.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            self.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        case .customFull(let top, let bottom, let leading, let trailing):
+            self.topAnchor.constraint(equalTo: view.topAnchor, constant: top).isActive = true
+            self.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: bottom).isActive = true
+            self.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leading).isActive = true
+            self.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: trailing).isActive = true
+        }
+    }
+    
+    private var scheduleConstant: CGFloat?
+    func move(keyboardHeight: CGFloat, keyboardAnimationDuration:TimeInterval) {
+        guard let centerYLayoutConstraint = centerYLayoutConstraint else {
+            return
+        }
+        
+        let constant = constatnt_CenterYLayoutConstraint(keyboardHeight: keyboardHeight)
+        
+        if scheduleConstant ?? centerYLayoutConstraint.constant != constant {
+            scheduleConstant = constant
+            
+            //キーボードが出たまま前のViewControllerに戻った時の動きが不自然であったためこちらに変更
+            let last = Int(keyboardAnimationDuration / 0.005)
+            let diff = constant - centerYLayoutConstraint.constant
+            let endConstant = constant
+            
+            func animationTimeInterval(total: TimeInterval, now: Int, last: Int) -> TimeInterval {
+                //途中に加速してよりアニメーションらしい動きにしています。
+                guard 1 <= now && now <= last else {
+                    return 0
+                }
+                
+                let avg = (total / TimeInterval(last))
+                
+                let hiStart = (last / 12) + 1
+                let slowStart = last - (last / 12) + 1
+                
+                let slowTimeInterval = TimeInterval(avg * 2.5)
+                let slowCount = hiStart - 1 + last - slowStart + 1
+                let hiTimeInterval = (total - slowTimeInterval * TimeInterval(slowCount)) / TimeInterval(last - slowCount)
+                
+                var rtn: TimeInterval = 0
+                for i in 1...now {
+                    switch i {
+                    case let int where (1 <= int && int < hiStart) || slowStart <= int:
+                        rtn += slowTimeInterval
+                    default:
+                        rtn += hiTimeInterval
+                    }
+                }
+                
+                return rtn
+            }
+            
+            if last >= 1 {
+                for i in 1...last {
+                    delayStart(second: animationTimeInterval(total: keyboardAnimationDuration, now: i, last: last), animations: {
+                        //割り切れない場合に微妙に値が変わるためIntにする
+                        if Int(centerYLayoutConstraint.constant + (diff / CGFloat(last)) * CGFloat(last - i + 1)) == Int(endConstant), let scheduleConstant = self.scheduleConstant, scheduleConstant == endConstant {
+                            centerYLayoutConstraint.constant += diff / CGFloat(last)
+                            if i == last {
+                                self.scheduleConstant = nil
+                            }
+                        }else {
+                            //他で変更があればここでは変更しない
+                            self.scheduleConstant = nil
+                        }
+                    })
+                }
+            }else {
+                centerYLayoutConstraint.constant = constant
+            }
+            
+            /*
+             UIView.animate(withDuration: keyboardAnimationDuration, delay: 0, options: [.allowUserInteraction], animations: {
+             
+             if let scheduleConstant = scheduleConstant, scheduleConstant == constant {
+             backgroundView?.frame.origin.y = (backgroundView?.superview?.center.y ?? 0) + constant - ((backgroundView?.frame.size.height ?? 0) / 2)
+             }
+             }, completion: { finished in
+             if let scheduleConstant = scheduleConstant, scheduleConstant == constant {
+             centerYLayoutConstraint.constant = constant
+             }
+             
+             scheduleConstant = nil
+             })
+             */
+        }
+    }
+    
+    private var beforeSetKeyboardHeight: CGFloat = 0
+    private func constatnt_CenterYLayoutConstraint(keyboardHeight: CGFloat?) -> CGFloat {
+        let heightSuperview = self.superview?.frame.size.height ?? 0
+        let activeHeight = heightSuperview - (keyboardHeight ?? beforeSetKeyboardHeight)
+        let diff = heightSuperview / 2 - activeHeight / 2
+        
+        var constatntDef_CenterYLayoutConstraint: CGFloat {
+            if keyboardHeight ?? beforeSetKeyboardHeight > 0 {
+                return activeHeight / 65
+            }else {
+                return activeHeight / 20
+            }
+        }
+        
+        if let keyboardHeight = keyboardHeight {
+            beforeSetKeyboardHeight = keyboardHeight
+        }
+        
+        return -constatntDef_CenterYLayoutConstraint - diff
     }
 }
 
@@ -631,18 +692,59 @@ fileprivate class StringLabel: UILabel, ReleaseAvility {
         self.textColor = tintColor
         self.font = UIFont.systemFont(ofSize: 15)
         self.textAlignment = .center
+    }
+    
+    private var widthLabelAnchor: NSLayoutConstraint?
+    private var heightLabelAnchor: NSLayoutConstraint?
+    func setAnchor(markOriginalSize: CGSize, markImageSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, viewSize: CGSize) {
+        guard let backgroundView = self.superview else {
+            return
+        }
         
-        if string == "" {
+        self.frame.size = .zero
+        
+        if self.text != "" {
             self.frame.size = .zero
-        }else {
             self.sizeToFit()
         }
         
-        let maxLabelWidth: CGFloat = 196.666666666667
+        var maxLabelWidth: CGFloat {
+            let space: CGFloat = 70
+            
+            switch backgroundStyle {
+            case .basic:
+                return 196.666666666667
+            case .full, .none:
+                return viewSize.width - space
+            case .customFull( _, _, let leading, let trailing):
+                return viewSize.width - leading - trailing - space
+            }
+        }
+        
         if self.frame.size.width > maxLabelWidth {
             let size = CGSize(width: maxLabelWidth, height: self.frame.size.height)
             self.frame.size = self.sizeThatFits(size)
             self.lineBreakMode = .byWordWrapping
+        }
+        
+        var spaceMarkAndLabel: CGFloat {
+            return (markOriginalSize.height - markImageSize.height) / 3
+        }
+        
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
+        self.centerYAnchor.constraint(equalTo: backgroundView.centerYAnchor, constant: markImageSize.height / 2 + spaceMarkAndLabel).isActive = true
+        
+        if let widthLabelAnchor = widthLabelAnchor, let heightLabelAnchor = heightLabelAnchor {
+            widthLabelAnchor.constant = self.frame.size.width
+            heightLabelAnchor.constant = self.frame.size.height
+        }else {
+            widthLabelAnchor = self.widthAnchor.constraint(equalToConstant: self.frame.size.width)
+            widthLabelAnchor?.isActive = true
+            
+            heightLabelAnchor = self.heightAnchor.constraint(equalToConstant: self.frame.size.height)
+            heightLabelAnchor?.isActive = true
         }
     }
 }
@@ -671,6 +773,19 @@ fileprivate extension ReleaseAvility where Self: UIView {
             imageView.image = nil
             imageView.animationImages = nil
         }
+    }
+}
+
+fileprivate protocol DelayAvility {
+    func delayStart(second: Double, animations: @escaping () -> Void)
+}
+
+fileprivate extension DelayAvility {
+    func delayStart(second: Double, animations: @escaping () -> Void) {
+        let dispatchTime = DispatchTime.now() + Double(Int64(second * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: dispatchTime, execute: {
+            animations()
+        })
     }
 }
 
