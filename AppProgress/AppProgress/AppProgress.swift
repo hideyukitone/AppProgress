@@ -14,31 +14,43 @@ open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
     //ShowAppProgressAvility
     
     open static func show(view: UIView, string: String = "", keyboardHeight: CGFloat = 0) {
-        appProgressUI.displayRotationAnimation(type: .loading, view: view, string: string, keyboardHeight: keyboardHeight)
+        syncMain {
+            appProgressUI.displayRotationAnimation(type: .loading, view: view, string: string, keyboardHeight: keyboardHeight)
+        }
     }
     
     open static func done(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
-        appProgressUI.displayAnimationWithDismiss(type: .done, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+        syncMain {
+            appProgressUI.displayAnimationWithDismiss(type: .done, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+        }
     }
     
     open static func info(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
-        appProgressUI.displayAnimationWithDismiss(type: .info, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+        syncMain {
+            appProgressUI.displayAnimationWithDismiss(type: .info, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+        }
     }
     
     open static func err(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
-        appProgressUI.displayAnimationWithDismiss(type: .err, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+        syncMain {
+            appProgressUI.displayAnimationWithDismiss(type: .err, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+        }
     }
     
     open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", keyboardHeight: CGFloat = 0, isRotation: Bool = false, completion: (() -> Void)? = nil) {
-        if isRotation {
-            appProgressUI.displayRotationAnimation(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight)
-        }else {
-            appProgressUI.displayAnimationWithDismiss(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+        syncMain {
+            if isRotation {
+                appProgressUI.displayRotationAnimation(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight)
+            }else {
+                appProgressUI.displayAnimationWithDismiss(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+            }
         }
     }
     
     open static func dismiss(completion: (() -> Void)? = nil) {
-        appProgressUI.dismiss(completion: completion)
+        syncMain {
+            appProgressUI.dismiss(completion: completion)
+        }
     }
     
     //EditableAppProgressProperty
@@ -53,6 +65,18 @@ open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
     
     open static func setMinimumDismissTimeInterval(timeInterval: TimeInterval) {
         appProgressUI.setMinimumDismissTimeInterval(timeInterval: timeInterval)
+    }
+    
+    //private
+    
+    private static func syncMain(block: () -> Void) {
+        if Thread.isMainThread {
+            block()
+        }else {
+            DispatchQueue.main.sync() { () -> Void in
+                block()
+            }
+        }
     }
 }
 
