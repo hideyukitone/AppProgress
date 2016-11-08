@@ -17,28 +17,28 @@ open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
         appProgressUI.displayRotationAnimation(type: .loading, view: view, string: string, keyboardHeight: keyboardHeight)
     }
     
-    open static func done(view: UIView, string: String = "", keyboardHeight: CGFloat = 0) {
-        appProgressUI.displayAnimationWithDismiss(type: .done, view: view, string: string, keyboardHeight: keyboardHeight)
+    open static func done(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
+        appProgressUI.displayAnimationWithDismiss(type: .done, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
     }
     
-    open static func info(view: UIView, string: String = "", keyboardHeight: CGFloat = 0) {
-        appProgressUI.displayAnimationWithDismiss(type: .info, view: view, string: string, keyboardHeight: keyboardHeight)
+    open static func info(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
+        appProgressUI.displayAnimationWithDismiss(type: .info, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
     }
     
-    open static func err(view: UIView, string: String = "", keyboardHeight: CGFloat = 0) {
-        appProgressUI.displayAnimationWithDismiss(type: .err, view: view, string: string, keyboardHeight: keyboardHeight)
+    open static func err(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
+        appProgressUI.displayAnimationWithDismiss(type: .err, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
     }
     
-    open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", keyboardHeight: CGFloat = 0, isRotation: Bool = false) {
+    open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", keyboardHeight: CGFloat = 0, isRotation: Bool = false, completion: (() -> Void)? = nil) {
         if isRotation {
             appProgressUI.displayRotationAnimation(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight)
         }else {
-            appProgressUI.displayAnimationWithDismiss(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight)
+            appProgressUI.displayAnimationWithDismiss(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
         }
     }
     
-    open static func dismiss() {
-        appProgressUI.dismiss()
+    open static func dismiss(completion: (() -> Void)? = nil) {
+        appProgressUI.dismiss(completion: completion)
     }
     
     //EditableAppProgressProperty
@@ -149,7 +149,7 @@ fileprivate class AppProgressUI: DelayAvility {
         })
     }
     
-    func displayAnimationWithDismiss(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat) {
+    func displayAnimationWithDismiss(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)? = nil) {
         func dismissTimeInterval(string: String) -> TimeInterval {
             return max(TimeInterval(string.characters.count) * TimeInterval(0.06) + TimeInterval(0.5), minimumDismissTimeInterval)
         }
@@ -163,18 +163,20 @@ fileprivate class AppProgressUI: DelayAvility {
             let dismissId = self._settingInfo?.id
             self.delayStart(second: dismissTimeInterval(string: string), animations: {() -> Void in
                 if let id = self._settingInfo?.id , id == dismissId {
-                    self.dismiss()
+                    self.dismiss(completion: completion)
                 }
             })
         })
     }
     
-    func dismiss() {
+    func dismiss(completion: (() -> Void)? = nil) {
         UIView.animate(withDuration: fadeOutAnimationDuration, animations: {
             self.setAlpha(0)
         }, completion: { finished in
             self.remove()
             NotificationCenter.default.removeObserver(self)
+            
+            completion?()
         })
     }
     
@@ -791,11 +793,11 @@ fileprivate extension DelayAvility {
 
 fileprivate protocol ShowAppProgressAvility {
     static func show(view: UIView, string: String, keyboardHeight: CGFloat)
-    static func done(view: UIView, string: String, keyboardHeight: CGFloat)
-    static func info(view: UIView, string: String, keyboardHeight: CGFloat)
-    static func err(view: UIView, string: String, keyboardHeight: CGFloat)
-    static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode, string: String, keyboardHeight: CGFloat, isRotation: Bool)
-    static func dismiss()
+    static func done(view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)?)
+    static func info(view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)?)
+    static func err(view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)?)
+    static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode, string: String, keyboardHeight: CGFloat, isRotation: Bool, completion: (() -> Void)?)
+    static func dismiss(completion: (() -> Void)?)
 }
 
 fileprivate protocol EditableAppProgressProperty {

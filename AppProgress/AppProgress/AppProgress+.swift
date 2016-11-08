@@ -17,36 +17,36 @@ extension AppProgress {
         show(view: window, string: string, keyboardHeight: visibleKeyboardHeight)
     }
     
-    static func done(string: String = "") {
+    static func done(string: String = "", completion: (() -> Void)? = nil) {
         guard let window = window else {
             return
         }
         
-        done(view: window, string: string, keyboardHeight: visibleKeyboardHeight)
+        done(view: window, string: string, keyboardHeight: visibleKeyboardHeight, completion: completion)
     }
     
-    static func info(string: String = "") {
+    static func info(string: String = "", completion: (() -> Void)? = nil) {
         guard let window = window else {
             return
         }
         
-        info(view: window, string: string, keyboardHeight: visibleKeyboardHeight)
+        info(view: window, string: string, keyboardHeight: visibleKeyboardHeight, completion: completion)
     }
     
-    static func err(string: String = "") {
+    static func err(string: String = "", completion: (() -> Void)? = nil) {
         guard let window = window else {
             return
         }
         
-        err(view: window, string: string, keyboardHeight: visibleKeyboardHeight)
+        err(view: window, string: string, keyboardHeight: visibleKeyboardHeight, completion: completion)
     }
     
-    static func custom(image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false) {
+    static func custom(image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
         guard let window = window else {
             return
         }
         
-        custom(view: window, image: image, imageRenderingMode: imageRenderingMode, string: string, keyboardHeight: visibleKeyboardHeight, isRotation: isRotation)
+        custom(view: window, image: image, imageRenderingMode: imageRenderingMode, string: string, keyboardHeight: visibleKeyboardHeight, isRotation: isRotation, completion: completion)
     }
     
     private static var window: UIWindow? {
