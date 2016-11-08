@@ -245,6 +245,24 @@ fileprivate class AppProgressUI: DelayAvility {
         func isEqual(setting: SettingInfomation) -> Bool {
             return mark.isEqual(type: setting.mark) && string == setting.string && colorType.isEqual(type: setting.colorType) && backgroundStyle.isEqual(type: setting.backgroundStyle)
         }
+        
+        var markImageSize: CGSize {
+            switch backgroundStyle {
+            case .basic:
+                if string == "" {
+                    return mark.size
+                }else {
+                    return CGSize(width: (mark.size.width / 4) * 3, height: (mark.size.height / 4) * 3)
+                }
+            case .full, .none, .customFull( _, _, _, _):
+                return mark.size
+            }
+            
+        }
+        
+        var spaceMarkAndLabel: CGFloat {
+            return (mark.size.height - markImageSize.height) / 3
+        }
     }
     
     private func displayAnimation(
@@ -356,16 +374,7 @@ fileprivate class AppProgressUI: DelayAvility {
     }
     
     @objc func setPosition(notification: NSNotification) {
-        if let markView = markView
-            , let view = backgroundView?.superview
-            , let _settingInfo = _settingInfo
-            , let stringLabel = stringLabel {
-            stringLabel.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markView.frame.size, backgroundStyle: _settingInfo.backgroundStyle, viewSize: view.frame.size)
-            
-            backgroundView?.setAnchor(markOriginalSize: _settingInfo.mark.size, backgroundStyle: _settingInfo.backgroundStyle, stringLabel: stringLabel, keyboardHeight: nil)
-            
-            markView.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markView.frame.size, stringLabel: stringLabel)
-        }
+        setAnchor(keyboardHeight: nil)
     }
     
     @objc func setPositionForKeyboard(notification: NSNotification) {
@@ -404,25 +413,7 @@ fileprivate class AppProgressUI: DelayAvility {
         backgroundView.addSubview(markView)
         backgroundView.addSubview(stringLabel)
         
-        var markImageSize: CGSize {
-            switch backgroundStyle {
-            case .basic:
-                if _settingInfo.string == "" {
-                    return _settingInfo.mark.size
-                }else {
-                    return CGSize(width: (_settingInfo.mark.size.width / 4) * 3, height: (_settingInfo.mark.size.height / 4) * 3)
-                }
-            case .full, .none, .customFull( _, _, _, _):
-                return _settingInfo.mark.size
-            }
-            
-        }
-        
-        stringLabel.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markImageSize, backgroundStyle: _settingInfo.backgroundStyle, viewSize: view.frame.size)
-        
-        backgroundView.setAnchor(markOriginalSize: _settingInfo.mark.size, backgroundStyle: _settingInfo.backgroundStyle, stringLabel: stringLabel, keyboardHeight: keyboardHeight)
-        
-        markView.setAnchor(markOriginalSize: _settingInfo.mark.size, markImageSize: markImageSize, stringLabel: stringLabel)
+        setAnchor(keyboardHeight: keyboardHeight)
         
         func setUserInteractionEnabled(isEnabled: Bool) {
             backgroundView.isUserInteractionEnabled = isEnabled
@@ -438,6 +429,18 @@ fileprivate class AppProgressUI: DelayAvility {
         }
         
         registNotifications()
+    }
+    
+    private func setAnchor(keyboardHeight: CGFloat?) {
+        guard let _settingInfo = _settingInfo, let markView = markView, let backgroundView = backgroundView, let stringLabel = stringLabel, let view = backgroundView.superview else {
+            return
+        }
+        
+        stringLabel.setAnchor(spaceMarkAndLabel: _settingInfo.spaceMarkAndLabel, markImageSize: _settingInfo.markImageSize, backgroundStyle: _settingInfo.backgroundStyle, viewSize: view.frame.size)
+        
+        backgroundView.setAnchor(markOriginalSize: _settingInfo.mark.size, backgroundStyle: _settingInfo.backgroundStyle, stringLabel: stringLabel, keyboardHeight: keyboardHeight)
+        
+        markView.setAnchor(spaceMarkAndLabel: _settingInfo.spaceMarkAndLabel, markImageSize: _settingInfo.markImageSize, stringLabel: stringLabel)
     }
 }
 
@@ -495,13 +498,9 @@ fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
     private var widthMarkLayoutConstraint: NSLayoutConstraint?
     private var heightMarkLayoutConstraint: NSLayoutConstraint?
     
-    func setAnchor(markOriginalSize: CGSize, markImageSize: CGSize, stringLabel: StringLabel) {
+    func setAnchor(spaceMarkAndLabel: CGFloat, markImageSize: CGSize, stringLabel: StringLabel) {
         guard let backgroundView = self.superview else {
             return
-        }
-        
-        var spaceMarkAndLabel: CGFloat {
-            return (markOriginalSize.height - markImageSize.height) / 3
         }
         
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -722,7 +721,7 @@ fileprivate class StringLabel: UILabel, ReleaseAvility {
     
     private var widthLabelAnchor: NSLayoutConstraint?
     private var heightLabelAnchor: NSLayoutConstraint?
-    func setAnchor(markOriginalSize: CGSize, markImageSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, viewSize: CGSize) {
+    func setAnchor(spaceMarkAndLabel: CGFloat, markImageSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, viewSize: CGSize) {
         guard let backgroundView = self.superview else {
             return
         }
@@ -751,10 +750,6 @@ fileprivate class StringLabel: UILabel, ReleaseAvility {
             let size = CGSize(width: maxLabelWidth, height: self.frame.size.height)
             self.frame.size = self.sizeThatFits(size)
             self.lineBreakMode = .byWordWrapping
-        }
-        
-        var spaceMarkAndLabel: CGFloat {
-            return (markOriginalSize.height - markImageSize.height) / 3
         }
         
         self.translatesAutoresizingMaskIntoConstraints = false
