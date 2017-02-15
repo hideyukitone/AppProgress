@@ -24,9 +24,9 @@ class ViewController: UIViewController {
     @IBAction func changedColorType(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            AppProgress.setColorType(type: .blackAndWhite)
-        case 1:
             AppProgress.setColorType(type: .whiteAndBlack)
+        case 1:
+            AppProgress.setColorType(type: .blackAndWhite)
         case 2:
             AppProgress.setColorType(type: .grayAndWhite)
         default:
@@ -37,9 +37,9 @@ class ViewController: UIViewController {
     @IBAction func changedBackgroundStyle(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            AppProgress.setBackgroundStyle(style: .basic)
-        case 1:
             AppProgress.setBackgroundStyle(style: .full)
+        case 1:
+            AppProgress.setBackgroundStyle(style: .basic)
         case 2:
             AppProgress.setBackgroundStyle(style: .none)
         default:

@@ -90,11 +90,11 @@ public enum AppProgressColor {
     fileprivate var tintColor: UIColor? {
         switch self {
         case .grayAndWhite:
-            return .make(hex: "848484")
+            return #colorLiteral(red: 0.5176470588, green: 0.5176470588, blue: 0.5176470588, alpha: 1)
         case .whiteAndBlack:
             return .white
         case .lightGrayAndWhite:
-            return .make(hex: "A7A6A6")
+            return #colorLiteral(red: 0.6549019608, green: 0.6509803922, blue: 0.6509803922, alpha: 1)
         case .blackAndWhite:
             return .black
         case .custom(let color, _):
@@ -107,7 +107,7 @@ public enum AppProgressColor {
         case .grayAndWhite:
             return UIColor.white.withAlphaComponent(0.99)
         case .whiteAndBlack:
-            return .make(hex: "232323", alpha: 0.89)
+            return #colorLiteral(red: 0.137254902, green: 0.137254902, blue: 0.137254902, alpha: 0.89)
         case .lightGrayAndWhite:
             return UIColor.white.withAlphaComponent(0.99)
         case .blackAndWhite:
@@ -216,8 +216,8 @@ fileprivate class AppProgressUI: DelayAvility {
         minimumDismissTimeInterval = timeInterval
     }
     
-    private var colorType = AppProgressColor.blackAndWhite
-    private var backgroundStyle = AppProgressBackgroundStyle.basic
+    private var colorType = AppProgressColor.whiteAndBlack
+    private var backgroundStyle = AppProgressBackgroundStyle.full
     private var minimumDismissTimeInterval: TimeInterval = 0.5
     
     private let fadeInAnimationDuration: TimeInterval = 0.15
@@ -1053,24 +1053,5 @@ fileprivate enum MarkType {
         UIGraphicsEndImageContext()
         
         return image?.withRenderingMode(.alwaysTemplate)
-    }
-}
-
-//****************************************************
-// MARK: - fileprivate extension
-//****************************************************
-
-fileprivate extension UIColor {
-    static func make(hex: String, alpha: CGFloat = 1) -> UIColor? {
-        let scanner = Scanner(string: hex)
-        var color: UInt32 = 0
-        if scanner.scanHexInt32(&color) {
-            let r = CGFloat((color & 0xFF0000) >> 16) / 255.0
-            let g = CGFloat((color & 0x00FF00) >> 8) / 255.0
-            let b = CGFloat(color & 0x0000FF) / 255.0
-            return UIColor(red: r, green: g, blue: b, alpha: alpha)
-        }else {
-            return nil
-        }
     }
 }
