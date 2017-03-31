@@ -475,7 +475,7 @@ fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
         
         let animation = CABasicAnimation(keyPath: "transform.rotation")
         animation.fromValue = 0
-        animation.toValue = CGFloat(M_PI) * 2
+        animation.toValue = CGFloat(Double.pi) * 2
         animation.duration = 1.17
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
         animation.repeatCount = MAXFLOAT
@@ -892,7 +892,7 @@ fileprivate enum MarkType {
         
         let path = UIBezierPath()
         
-        path.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: CGFloat(M_PI) * 2, clockwise: true)
+        path.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: CGFloat(Double.pi) * 2, clockwise: true)
         path.close()
         
         let topSpace: CGFloat = 8
@@ -1042,7 +1042,7 @@ fileprivate enum MarkType {
         
         let path = UIBezierPath()
         
-        path.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: ((CGFloat(M_PI) * 2) / 200) * 175, clockwise: true)
+        path.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: ((CGFloat(Double.pi) * 2) / 200) * 175, clockwise: true)
         
         tintColor?.setStroke()
         
