@@ -162,7 +162,7 @@ fileprivate class AppProgressUI: DelayAvility {
     var stringLabel: StringLabel?
     
     func displayRotationAnimation(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat) {
-        let isEqualImage = _settingInfo?.isEqualImage(setting: SettingInfomation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)) ?? false
+        let isEqualImage = _settingInfo?.isEqualImage(setting: SettingInformation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)) ?? false
         
         displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, isRotation: true, animations: {
             if !isEqualImage || !(self.markView?.isRotationing ?? false) {
@@ -223,8 +223,8 @@ fileprivate class AppProgressUI: DelayAvility {
     private let fadeInAnimationDuration: TimeInterval = 0.15
     private let fadeOutAnimationDuration: TimeInterval = 0.15
     
-    private var _settingInfo: SettingInfomation?
-    private struct SettingInfomation {
+    private var _settingInfo: SettingInformation?
+    private struct SettingInformation {
         let id = UUID().uuidString
         let mark: MarkType
         let string: String
@@ -238,11 +238,11 @@ fileprivate class AppProgressUI: DelayAvility {
             self.backgroundStyle = backgroundStyle
         }
         
-        func isEqualImage(setting: SettingInfomation) -> Bool {
+        func isEqualImage(setting: SettingInformation) -> Bool {
             return mark.isEqual(type: setting.mark) && colorType.tintColor == setting.colorType.tintColor
         }
         
-        func isEqual(setting: SettingInfomation) -> Bool {
+        func isEqual(setting: SettingInformation) -> Bool {
             return mark.isEqual(type: setting.mark) && string == setting.string && colorType.isEqual(type: setting.colorType) && backgroundStyle.isEqual(type: setting.backgroundStyle)
         }
         
@@ -274,7 +274,7 @@ fileprivate class AppProgressUI: DelayAvility {
         , animations: @escaping () -> Void
         , completion: @escaping () -> Void) {
         
-        let settingInfo = SettingInfomation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)
+        let settingInfo = SettingInformation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)
         
         if _settingInfo?.isEqual(setting: settingInfo) ?? false && (markView?.isRotationing ?? false) == isRotation {
             if let backgroundView = backgroundView {
@@ -340,46 +340,46 @@ fileprivate class AppProgressUI: DelayAvility {
         NotificationCenter.default.addObserver(
             self
             , selector: #selector(self.setPosition(notification:))
-            , name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation
+            , name: Notification.Name.UIApplicationDidChangeStatusBarOrientation
             , object: nil
         )
         
         NotificationCenter.default.addObserver(
             self
             , selector: #selector(self.setPosition(notification:))
-            , name: NSNotification.Name.UIApplicationDidBecomeActive
+            , name: Notification.Name.UIApplicationDidBecomeActive
             , object: nil
         )
         
         NotificationCenter.default.addObserver(
             self
             , selector: #selector(self.setPosition(notification:))
-            , name: NSNotification.Name.UIDeviceOrientationDidChange
+            , name: Notification.Name.UIDeviceOrientationDidChange
             , object: nil
         )
         
         NotificationCenter.default.addObserver(
             self
             , selector: #selector(self.setPositionForKeyboard(notification:))
-            , name: NSNotification.Name.UIKeyboardWillHide
+            , name: Notification.Name.UIKeyboardWillHide
             , object: nil
         )
         
         NotificationCenter.default.addObserver(
             self
             , selector: #selector(self.setPositionForKeyboard(notification:))
-            , name: NSNotification.Name.UIKeyboardWillShow
+            , name: Notification.Name.UIKeyboardWillShow
             , object: nil
         )
     }
     
-    @objc func setPosition(notification: NSNotification) {
+    @objc func setPosition(notification: Notification) {
         setAnchor(keyboardHeight: nil)
     }
     
-    @objc func setPositionForKeyboard(notification: NSNotification) {
+    @objc func setPositionForKeyboard(notification: Notification) {
         var keyboardHeight: CGFloat {
-            if notification.name == NSNotification.Name.UIKeyboardDidHide || notification.name == NSNotification.Name.UIKeyboardWillHide {
+            if notification.name == Notification.Name.UIKeyboardDidHide || notification.name == Notification.Name.UIKeyboardWillHide {
                 return 0
             }else {
                 return (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
