@@ -8,41 +8,41 @@
 import Foundation
 import UIKit
 
-open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
+open class AppProgress: AppProgressShowable, AppProgressPropertyEditable {
     private static let appProgressUI = AppProgressUI()
     
-    //ShowAppProgressAvility
+    //AppProgressShowable
     
-    open static func show(view: UIView, string: String = "", keyboardHeight: CGFloat = 0) {
+    open static func show(view: UIView, string: String = "") {
         syncMain {
-            appProgressUI.displayRotationAnimation(type: .loading, view: view, string: string, keyboardHeight: keyboardHeight)
+            appProgressUI.displayRotationAnimation(type: .loading, view: view, string: string)
         }
     }
     
-    open static func done(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
+    open static func done(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
         syncMain {
-            appProgressUI.displayAnimationWithDismiss(type: .done, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+            appProgressUI.displayAnimationWithDismiss(type: .done, view: view, string: string, completion: completion)
         }
     }
     
-    open static func info(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
+    open static func info(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
         syncMain {
-            appProgressUI.displayAnimationWithDismiss(type: .info, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+            appProgressUI.displayAnimationWithDismiss(type: .info, view: view, string: string, completion: completion)
         }
     }
     
-    open static func err(view: UIView, string: String = "", keyboardHeight: CGFloat = 0, completion: (() -> Void)? = nil) {
+    open static func err(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
         syncMain {
-            appProgressUI.displayAnimationWithDismiss(type: .err, view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+            appProgressUI.displayAnimationWithDismiss(type: .err, view: view, string: string, completion: completion)
         }
     }
     
-    open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", keyboardHeight: CGFloat = 0, isRotation: Bool = false, completion: (() -> Void)? = nil) {
+    open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
         syncMain {
             if isRotation {
-                appProgressUI.displayRotationAnimation(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight)
-            }else {
-                appProgressUI.displayAnimationWithDismiss(type: .custom(image, imageRenderingMode), view: view, string: string, keyboardHeight: keyboardHeight, completion: completion)
+                appProgressUI.displayRotationAnimation(type: .custom(image, imageRenderingMode), view: view, string: string)
+            } else {
+                appProgressUI.displayAnimationWithDismiss(type: .custom(image, imageRenderingMode), view: view, string: string, completion: completion)
             }
         }
     }
@@ -53,7 +53,7 @@ open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
         }
     }
     
-    //EditableAppProgressProperty
+    //AppProgressPropertyEditable
     
     open static func setColorType(type: AppProgressColor) {
         appProgressUI.setColorType(type: type)
@@ -72,7 +72,7 @@ open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
     private static func syncMain(block: () -> Void) {
         if Thread.isMainThread {
             block()
-        }else {
+        } else {
             DispatchQueue.main.sync() { () -> Void in
                 block()
             }
@@ -80,7 +80,7 @@ open class AppProgress: ShowAppProgressAvility, EditableAppProgressProperty {
     }
 }
 
-public enum AppProgressColor {
+public enum AppProgressColor: Equatable {
     case blackAndWhite
     case whiteAndBlack
     case grayAndWhite
@@ -116,74 +116,63 @@ public enum AppProgressColor {
             return color
         }
     }
-    
-    fileprivate func isEqual(type: AppProgressColor) -> Bool {
-        return self.tintColor == type.tintColor && self.backgroundColor == type.backgroundColor
+
+    public static func == (lhs: AppProgressColor, rhs: AppProgressColor) -> Bool {
+        return lhs.tintColor == rhs.tintColor && lhs.backgroundColor == rhs.backgroundColor
     }
 }
 
-public enum AppProgressBackgroundStyle {
-    case basic
+public enum AppProgressBackgroundStyle: Equatable {
     case none
     case full
     case customFull(CGFloat, CGFloat, CGFloat, CGFloat) //constant (top, bottom, leading, trailing)
-    
-    fileprivate func isEqual(type: AppProgressBackgroundStyle) -> Bool {
-        switch self {
-        case .basic:
-            if case .basic = type {
-                return true
-            }
-        case .none:
-            if case .none = type {
-                return true
-            }
-        case .full:
-            if case .full = type {
-                return true
-            }
-        case .customFull(let top1, let bottom1, let leading1, let trailing1):
-            if case .customFull(let top2, let bottom2, let leading2, let trailing2) = type {
-                return top1 == top2 && bottom1 == bottom2 && leading1 == leading2 && trailing1 == trailing2
-            }
+
+    public static func == (lhs: AppProgressBackgroundStyle, rhs: AppProgressBackgroundStyle) -> Bool {
+        switch (lhs, rhs) {
+        case (.none, .none), (.full, .full):
+            return true
+        case (.customFull(let lTop, let lBottom, let lLeading, let lTrailing), .customFull(let rTop, let rBottom, let rLeading, let rTrailing)) where lTop == rTop && lBottom == rBottom && lLeading == rLeading && lTrailing == rTrailing:
+            return true
+        default:
+            return false
         }
-        
-        return false
     }
 }
 
-//****************************************************
 // MARK: - AppProgressUI
-//****************************************************
 
-fileprivate class AppProgressUI: DelayAvility {
+fileprivate class AppProgressUI: AnimationDelayable {
     var markView: MarkView?
     var backgroundView: BackgroundView?
     var stringLabel: StringLabel?
     
-    func displayRotationAnimation(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat) {
-        let isEqualImage = _settingInfo?.isEqualImage(setting: SettingInformation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)) ?? false
-        
-        displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, isRotation: true, animations: {
-            if !isEqualImage || !(self.markView?.isRotationing ?? false) {
-                self.markView?.startRotation()
+    func displayRotationAnimation(type: MarkType, view: UIView, string: String) {
+        let isEqual = _settingInfo == SettingInformation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)
+
+        displayAnimation(type: type, view: view, string: string, isRotation: true, animations: { [weak self] in
+            if !isEqual || self?.markView?.isRotationing != true {
+                self?.markView?.startRotation()
             }
-        }, completion: { finished in
+        }, completion: {
             
         })
     }
     
-    func displayAnimationWithDismiss(type: MarkType, view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)? = nil) {
+    func displayAnimationWithDismiss(type: MarkType, view: UIView, string: String, completion: (() -> Void)? = nil) {
         func dismissTimeInterval(string: String) -> TimeInterval {
             return max(TimeInterval(string.characters.count) * TimeInterval(0.06) + TimeInterval(0.5), minimumDismissTimeInterval)
         }
         
-        displayAnimation(type: type, view: view, string: string, keyboardHeight: keyboardHeight, isRotation: false, animations: {
+        displayAnimation(type: type, view: view, string: string, isRotation: false, animations: { [weak self] in
+            guard let `self` = self else { return }
+
             if let count = self.markView?.animationImages?.count, count > 0 {
                 self.markView?.animationDuration = self.fadeInAnimationDuration
                 self.markView?.startAnimating()
             }
-        }, completion: { finished in
+        }, completion: { [weak self] in
+            guard let `self` = self else { return }
+
             let dismissId = self._settingInfo?.id
             self.delayStart(second: dismissTimeInterval(string: string), animations: {() -> Void in
                 if let id = self._settingInfo?.id , id == dismissId {
@@ -194,11 +183,10 @@ fileprivate class AppProgressUI: DelayAvility {
     }
     
     func dismiss(completion: (() -> Void)? = nil) {
-        UIView.animate(withDuration: fadeOutAnimationDuration, animations: {
-            self.setAlpha(0)
-        }, completion: { finished in
-            self.remove()
-            NotificationCenter.default.removeObserver(self)
+        UIView.animate(withDuration: fadeOutAnimationDuration, animations: { [weak self] in
+            self?.setAlpha(0)
+        }, completion: { [weak self] _ in
+            self?.remove()
             
             completion?()
         })
@@ -224,7 +212,7 @@ fileprivate class AppProgressUI: DelayAvility {
     private let fadeOutAnimationDuration: TimeInterval = 0.15
     
     private var _settingInfo: SettingInformation?
-    private struct SettingInformation {
+    private struct SettingInformation: Equatable {
         let id = UUID().uuidString
         let mark: MarkType
         let string: String
@@ -237,23 +225,16 @@ fileprivate class AppProgressUI: DelayAvility {
             self.colorType = colorType
             self.backgroundStyle = backgroundStyle
         }
-        
-        func isEqualImage(setting: SettingInformation) -> Bool {
-            return mark.isEqual(type: setting.mark) && colorType.tintColor == setting.colorType.tintColor
-        }
-        
-        func isEqual(setting: SettingInformation) -> Bool {
-            return mark.isEqual(type: setting.mark) && string == setting.string && colorType.isEqual(type: setting.colorType) && backgroundStyle.isEqual(type: setting.backgroundStyle)
+
+        public static func == (lhs: SettingInformation, rhs: SettingInformation) -> Bool {
+            return lhs.mark == rhs.mark &&
+                lhs.string == rhs.string &&
+                lhs.colorType == rhs.colorType &&
+                lhs.backgroundStyle == rhs.backgroundStyle
         }
         
         var markImageSize: CGSize {
             switch backgroundStyle {
-            case .basic:
-                if string == "" {
-                    return mark.size
-                }else {
-                    return CGSize(width: (mark.size.width / 4) * 3, height: (mark.size.height / 4) * 3)
-                }
             case .full, .none, .customFull( _, _, _, _):
                 return mark.size
             }
@@ -269,14 +250,13 @@ fileprivate class AppProgressUI: DelayAvility {
         type: MarkType
         , view: UIView
         , string: String
-        , keyboardHeight: CGFloat
         , isRotation: Bool
         , animations: @escaping () -> Void
         , completion: @escaping () -> Void) {
         
         let settingInfo = SettingInformation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)
         
-        if _settingInfo?.isEqual(setting: settingInfo) ?? false && (markView?.isRotationing ?? false) == isRotation {
+        if _settingInfo == settingInfo && (markView?.isRotationing ?? false) == isRotation {
             if let backgroundView = backgroundView {
                 backgroundView.superview?.bringSubview(toFront: backgroundView)
             }
@@ -285,23 +265,22 @@ fileprivate class AppProgressUI: DelayAvility {
         }
         
         let isDisplaying = backgroundView != nil
-        
-        remove(isReleaseMarkView: !(_settingInfo?.isEqualImage(setting: settingInfo) ?? false && (markView?.isRotationing ?? false) == isRotation))
+        remove(isReleaseMarkView: !(_settingInfo == settingInfo && (markView?.isRotationing ?? false) == isRotation))
         
         _settingInfo = settingInfo
         
-        prepare(view: view, keyboardHeight: keyboardHeight)
+        prepare(view: view)
         
         if isDisplaying {
             animations()
             completion()
-        }else {
+        } else {
             setAlpha(0)
             backgroundView?.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
             
-            UIView.animate(withDuration: fadeInAnimationDuration, delay: 0, options: [.allowUserInteraction, .curveEaseOut, .beginFromCurrentState], animations: {
-                self.backgroundView?.transform = CGAffineTransform(scaleX: 1, y: 1)
-                self.setAlpha(1)
+            UIView.animate(withDuration: fadeInAnimationDuration, delay: 0, options: [.allowUserInteraction, .curveEaseOut, .beginFromCurrentState], animations: { [weak self] in
+                self?.backgroundView?.transform = CGAffineTransform(scaleX: 1, y: 1)
+                self?.setAlpha(1)
                 
                 animations()
             }, completion: { finished in
@@ -334,64 +313,7 @@ fileprivate class AppProgressUI: DelayAvility {
         stringLabel?.alpha = alpha
     }
     
-    private func registNotifications() {
-        NotificationCenter.default.removeObserver(self)
-        
-        NotificationCenter.default.addObserver(
-            self
-            , selector: #selector(self.setPosition(notification:))
-            , name: Notification.Name.UIApplicationDidChangeStatusBarOrientation
-            , object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self
-            , selector: #selector(self.setPosition(notification:))
-            , name: Notification.Name.UIApplicationDidBecomeActive
-            , object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self
-            , selector: #selector(self.setPosition(notification:))
-            , name: Notification.Name.UIDeviceOrientationDidChange
-            , object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self
-            , selector: #selector(self.setPositionForKeyboard(notification:))
-            , name: Notification.Name.UIKeyboardWillHide
-            , object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self
-            , selector: #selector(self.setPositionForKeyboard(notification:))
-            , name: Notification.Name.UIKeyboardWillShow
-            , object: nil
-        )
-    }
-    
-    @objc func setPosition(notification: Notification) {
-        setAnchor(keyboardHeight: nil)
-    }
-    
-    @objc func setPositionForKeyboard(notification: Notification) {
-        var keyboardHeight: CGFloat {
-            if notification.name == Notification.Name.UIKeyboardDidHide || notification.name == Notification.Name.UIKeyboardWillHide {
-                return 0
-            }else {
-                return (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
-            }
-        }
-        
-        let keyboardAnimationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0
-        
-        backgroundView?.move(keyboardHeight: keyboardHeight, keyboardAnimationDuration: keyboardAnimationDuration)
-    }
-    
-    private func prepare(view: UIView, keyboardHeight: CGFloat) {
+    private func prepare(view: UIView) {
         guard let _settingInfo = _settingInfo else {
             return
         }
@@ -413,7 +335,7 @@ fileprivate class AppProgressUI: DelayAvility {
         backgroundView.addSubview(markView)
         backgroundView.addSubview(stringLabel)
         
-        setAnchor(keyboardHeight: keyboardHeight)
+        setAnchor()
         
         func setUserInteractionEnabled(isEnabled: Bool) {
             backgroundView.isUserInteractionEnabled = isEnabled
@@ -427,72 +349,42 @@ fileprivate class AppProgressUI: DelayAvility {
         default:
             setUserInteractionEnabled(isEnabled: true)
         }
-        
-        registNotifications()
     }
     
-    private func setAnchor(keyboardHeight: CGFloat?) {
+    private func setAnchor() {
         guard let _settingInfo = _settingInfo, let markView = markView, let backgroundView = backgroundView, let stringLabel = stringLabel, let view = backgroundView.superview else {
             return
         }
         
         stringLabel.setAnchor(spaceMarkAndLabel: _settingInfo.spaceMarkAndLabel, markImageSize: _settingInfo.markImageSize, backgroundStyle: _settingInfo.backgroundStyle, viewSize: view.frame.size)
         
-        backgroundView.setAnchor(markOriginalSize: _settingInfo.mark.size, backgroundStyle: _settingInfo.backgroundStyle, stringLabel: stringLabel, keyboardHeight: keyboardHeight)
+        backgroundView.setAnchor(markOriginalSize: _settingInfo.mark.size, backgroundStyle: _settingInfo.backgroundStyle, stringLabel: stringLabel)
         
         markView.setAnchor(spaceMarkAndLabel: _settingInfo.spaceMarkAndLabel, markImageSize: _settingInfo.markImageSize, stringLabel: stringLabel)
     }
 }
 
-fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
+fileprivate class MarkView: UIImageView, ViewRotationable, ViewReleasable {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
     init(type: MarkType, tintColor: UIColor?) {
         let images = type.images(tintColor: tintColor)
-        
-        if images.count >= 1 {
-            if images.count == 1 {
-                super.init(image: images.first)
-            }else {
-                super.init(image: images.last)
-                self.animationImages = images
-                self.animationRepeatCount = 1
-                self.tintColor = tintColor
-            }
-        }else {
-           super.init(image: nil)
+
+        switch images.count {
+        case 1:
+            super.init(image: images.first)
+        case let count where count > 1:
+            super.init(image: images.last)
+            self.animationImages = images
+            self.animationRepeatCount = 1
+            self.tintColor = tintColor
+        default:
+            super.init(image: nil)
         }
         
         self.tintColor = tintColor
-    }
-    
-    private var forKey = "loadingAnimation"
-    
-    func startRotation() {
-        self.stopRotation()
-        
-        let animation = CABasicAnimation(keyPath: "transform.rotation")
-        animation.fromValue = 0
-        animation.toValue = CGFloat(Double.pi) * 2
-        animation.duration = 1.17
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
-        animation.repeatCount = MAXFLOAT
-        animation.isCumulative = true
-        animation.autoreverses = false
-        animation.fillMode = kCAFillModeForwards
-        animation.isRemovedOnCompletion = false
-        
-        self.layer.add(animation, forKey: forKey)
-    }
-    
-    func stopRotation() {
-        self.layer.removeAnimation(forKey: forKey)
-    }
-    
-    var isRotationing: Bool {
-        return self.layer.animationKeys()?.filter({$0 == forKey}).count ?? 0 > 0
     }
     
     private var widthMarkLayoutConstraint: NSLayoutConstraint?
@@ -511,7 +403,7 @@ fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
         if let widthMarkLayoutConstraint = widthMarkLayoutConstraint, let heightMarkLayoutConstraint = heightMarkLayoutConstraint {
             widthMarkLayoutConstraint.constant = markImageSize.width
             heightMarkLayoutConstraint.constant = markImageSize.height
-        }else {
+        } else {
             widthMarkLayoutConstraint = self.widthAnchor.constraint(equalToConstant: markImageSize.width)
             heightMarkLayoutConstraint = self.heightAnchor.constraint(equalToConstant: markImageSize.height)
             
@@ -521,7 +413,7 @@ fileprivate class MarkView: UIImageView, RotationAvility, ReleaseAvility {
     }
 }
 
-fileprivate class BackgroundView: UIView, ReleaseAvility, DelayAvility {
+fileprivate class BackgroundView: UIView, ViewReleasable, AnimationDelayable {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -531,13 +423,7 @@ fileprivate class BackgroundView: UIView, ReleaseAvility, DelayAvility {
         self.backgroundColor = backgroundColor
     }
     
-    private var centerYLayoutConstraint: NSLayoutConstraint?
-    private var widthLayoutConstraint: NSLayoutConstraint?
-    private var heightLayoutConstraint: NSLayoutConstraint?
-    
-    func setAnchor(markOriginalSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, stringLabel: StringLabel, keyboardHeight: CGFloat?) {
-        let constant = constatnt_CenterYLayoutConstraint(keyboardHeight: keyboardHeight)
-        
+    func setAnchor(markOriginalSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, stringLabel: StringLabel) {
         guard let view = self.superview else {
             return
         }
@@ -545,44 +431,6 @@ fileprivate class BackgroundView: UIView, ReleaseAvility, DelayAvility {
         self.translatesAutoresizingMaskIntoConstraints = false
         
         switch backgroundStyle {
-        case .basic:
-            let space: CGFloat = 20
-            let size = CGSize(width: max(markOriginalSize.width, stringLabel.frame.size.width), height: markOriginalSize.height + stringLabel.frame.size.height)
-            
-            var width: CGFloat {
-                if stringLabel.text == "" {
-                    return size.width + space * 2
-                }else {
-                    return max(size.width + space * 1, markOriginalSize.width * 2)
-                }
-            }
-            var height: CGFloat {
-                if stringLabel.text == "" {
-                    return size.height + space * 2
-                }else {
-                    return size.height + space * 1
-                }
-            }
-            
-            if let centerYLayoutConstraint = centerYLayoutConstraint
-                , let widthLayoutConstraint = widthLayoutConstraint
-                , let heightLayoutConstraint = heightLayoutConstraint {
-                centerYLayoutConstraint.constant = constant
-                widthLayoutConstraint.constant = width
-                heightLayoutConstraint.constant = height
-            }else {
-                centerYLayoutConstraint = self.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant)
-                centerYLayoutConstraint?.isActive = true
-                
-                widthLayoutConstraint = self.widthAnchor.constraint(equalToConstant: width)
-                widthLayoutConstraint?.isActive = true
-                heightLayoutConstraint = self.heightAnchor.constraint(equalToConstant: height)
-                heightLayoutConstraint?.isActive = true
-            }
-            
-            self.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            
-            self.layer.cornerRadius = 15
         case .none:
             self.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
             self.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -601,110 +449,9 @@ fileprivate class BackgroundView: UIView, ReleaseAvility, DelayAvility {
             self.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: trailing).isActive = true
         }
     }
-    
-    private var scheduleConstant: CGFloat?
-    func move(keyboardHeight: CGFloat, keyboardAnimationDuration:TimeInterval) {
-        guard let centerYLayoutConstraint = centerYLayoutConstraint else {
-            return
-        }
-        
-        let constant = constatnt_CenterYLayoutConstraint(keyboardHeight: keyboardHeight)
-        
-        if scheduleConstant ?? centerYLayoutConstraint.constant != constant {
-            scheduleConstant = constant
-            
-            //キーボードが出たまま前のViewControllerに戻った時の動きが不自然であったためこちらに変更
-            let last = Int(keyboardAnimationDuration / 0.005)
-            let diff = constant - centerYLayoutConstraint.constant
-            let endConstant = constant
-            
-            func animationTimeInterval(total: TimeInterval, now: Int, last: Int) -> TimeInterval {
-                //途中に加速してよりアニメーションらしい動きにしています。
-                guard 1 <= now && now <= last else {
-                    return 0
-                }
-                
-                let avg = (total / TimeInterval(last))
-                
-                let hiStart = (last / 12) + 1
-                let slowStart = last - (last / 12) + 1
-                
-                let slowTimeInterval = TimeInterval(avg * 2.5)
-                let slowCount = hiStart - 1 + last - slowStart + 1
-                let hiTimeInterval = (total - slowTimeInterval * TimeInterval(slowCount)) / TimeInterval(last - slowCount)
-                
-                var rtn: TimeInterval = 0
-                for i in 1...now {
-                    switch i {
-                    case let int where (1 <= int && int < hiStart) || slowStart <= int:
-                        rtn += slowTimeInterval
-                    default:
-                        rtn += hiTimeInterval
-                    }
-                }
-                
-                return rtn
-            }
-            
-            if last >= 1 {
-                for i in 1...last {
-                    delayStart(second: animationTimeInterval(total: keyboardAnimationDuration, now: i, last: last), animations: {
-                        //割り切れない場合に微妙に値が変わるためIntにする
-                        if Int(centerYLayoutConstraint.constant + (diff / CGFloat(last)) * CGFloat(last - i + 1)) == Int(endConstant), let scheduleConstant = self.scheduleConstant, scheduleConstant == endConstant {
-                            centerYLayoutConstraint.constant += diff / CGFloat(last)
-                            if i == last {
-                                self.scheduleConstant = nil
-                            }
-                        }else {
-                            //他で変更があればここでは変更しない
-                            self.scheduleConstant = nil
-                        }
-                    })
-                }
-            }else {
-                centerYLayoutConstraint.constant = constant
-            }
-            
-            /*
-             UIView.animate(withDuration: keyboardAnimationDuration, delay: 0, options: [.allowUserInteraction], animations: {
-             
-             if let scheduleConstant = scheduleConstant, scheduleConstant == constant {
-             backgroundView?.frame.origin.y = (backgroundView?.superview?.center.y ?? 0) + constant - ((backgroundView?.frame.size.height ?? 0) / 2)
-             }
-             }, completion: { finished in
-             if let scheduleConstant = scheduleConstant, scheduleConstant == constant {
-             centerYLayoutConstraint.constant = constant
-             }
-             
-             scheduleConstant = nil
-             })
-             */
-        }
-    }
-    
-    private var beforeSetKeyboardHeight: CGFloat = 0
-    private func constatnt_CenterYLayoutConstraint(keyboardHeight: CGFloat?) -> CGFloat {
-        let heightSuperview = self.superview?.frame.size.height ?? 0
-        let activeHeight = heightSuperview - (keyboardHeight ?? beforeSetKeyboardHeight)
-        let diff = heightSuperview / 2 - activeHeight / 2
-        
-        var constatntDef_CenterYLayoutConstraint: CGFloat {
-            if keyboardHeight ?? beforeSetKeyboardHeight > 0 {
-                return activeHeight / 65
-            }else {
-                return activeHeight / 20
-            }
-        }
-        
-        if let keyboardHeight = keyboardHeight {
-            beforeSetKeyboardHeight = keyboardHeight
-        }
-        
-        return -constatntDef_CenterYLayoutConstraint - diff
-    }
 }
 
-fileprivate class StringLabel: UILabel, ReleaseAvility {
+fileprivate class StringLabel: UILabel, ViewReleasable {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -737,8 +484,6 @@ fileprivate class StringLabel: UILabel, ReleaseAvility {
             let space: CGFloat = 70
             
             switch backgroundStyle {
-            case .basic:
-                return 196.666666666667
             case .full, .none:
                 return viewSize.width - space
             case .customFull( _, _, let leading, let trailing):
@@ -760,7 +505,7 @@ fileprivate class StringLabel: UILabel, ReleaseAvility {
         if let widthLabelAnchor = widthLabelAnchor, let heightLabelAnchor = heightLabelAnchor {
             widthLabelAnchor.constant = self.frame.size.width
             heightLabelAnchor.constant = self.frame.size.height
-        }else {
+        } else {
             widthLabelAnchor = self.widthAnchor.constraint(equalToConstant: self.frame.size.width)
             widthLabelAnchor?.isActive = true
             
@@ -770,21 +515,51 @@ fileprivate class StringLabel: UILabel, ReleaseAvility {
     }
 }
 
-//****************************************************
 // MARK: - fileprivate protocol
-//****************************************************
 
-fileprivate protocol RotationAvility {
+fileprivate protocol ViewRotationable {
+    var forKey: String { get }
     func startRotation()
     func stopRotation()
     var isRotationing: Bool { get }
 }
 
-fileprivate protocol ReleaseAvility {
+fileprivate extension ViewRotationable where Self: UIView {
+    var forKey: String {
+        return "loadingAnimation"
+    }
+
+    func startRotation() {
+        self.stopRotation()
+
+        let animation = CABasicAnimation(keyPath: "transform.rotation")
+        animation.fromValue = 0
+        animation.toValue = CGFloat(Double.pi) * 2
+        animation.duration = 1.17
+        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+        animation.repeatCount = MAXFLOAT
+        animation.isCumulative = true
+        animation.autoreverses = false
+        animation.fillMode = kCAFillModeForwards
+        animation.isRemovedOnCompletion = false
+
+        self.layer.add(animation, forKey: forKey)
+    }
+
+    func stopRotation() {
+        self.layer.removeAnimation(forKey: forKey)
+    }
+
+    var isRotationing: Bool {
+        return self.layer.animationKeys()?.filter({$0 == forKey}).count ?? 0 > 0
+    }
+}
+
+fileprivate protocol ViewReleasable {
     func releaseAll()
 }
 
-fileprivate extension ReleaseAvility where Self: UIView {
+fileprivate extension ViewReleasable where Self: UIView {
     func releaseAll() {
         self.removeFromSuperview()
         self.isHidden = true
@@ -797,11 +572,11 @@ fileprivate extension ReleaseAvility where Self: UIView {
     }
 }
 
-fileprivate protocol DelayAvility {
+fileprivate protocol AnimationDelayable {
     func delayStart(second: Double, animations: @escaping () -> Void)
 }
 
-fileprivate extension DelayAvility {
+fileprivate extension AnimationDelayable {
     func delayStart(second: Double, animations: @escaping () -> Void) {
         let dispatchTime = DispatchTime.now() + Double(Int64(second * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
         DispatchQueue.main.asyncAfter(deadline: dispatchTime, execute: {
@@ -810,26 +585,24 @@ fileprivate extension DelayAvility {
     }
 }
 
-fileprivate protocol ShowAppProgressAvility {
-    static func show(view: UIView, string: String, keyboardHeight: CGFloat)
-    static func done(view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)?)
-    static func info(view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)?)
-    static func err(view: UIView, string: String, keyboardHeight: CGFloat, completion: (() -> Void)?)
-    static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode, string: String, keyboardHeight: CGFloat, isRotation: Bool, completion: (() -> Void)?)
+fileprivate protocol AppProgressShowable {
+    static func show(view: UIView, string: String)
+    static func done(view: UIView, string: String, completion: (() -> Void)?)
+    static func info(view: UIView, string: String, completion: (() -> Void)?)
+    static func err(view: UIView, string: String, completion: (() -> Void)?)
+    static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode, string: String, isRotation: Bool, completion: (() -> Void)?)
     static func dismiss(completion: (() -> Void)?)
 }
 
-fileprivate protocol EditableAppProgressProperty {
+fileprivate protocol AppProgressPropertyEditable {
     static func setColorType(type: AppProgressColor)
     static func setBackgroundStyle(style: AppProgressBackgroundStyle)
     static func setMinimumDismissTimeInterval(timeInterval: TimeInterval)
 }
 
-//****************************************************
 // MARK: - fileprivate enum
-//****************************************************
 
-fileprivate enum MarkType {
+fileprivate enum MarkType: Equatable {
     case loading
     case done
     case err
@@ -854,32 +627,16 @@ fileprivate enum MarkType {
             return [image?.withRenderingMode(mode)].flatMap{$0}
         }
     }
-    
-    func isEqual(type: MarkType) -> Bool {
-        switch self {
-        case .custom(let image1, let mode1):
-            if case .custom(let image2, let mode2) = type {
-                return image1 == image2 && mode1 == mode2
-            }
-        case .done:
-            if case .done = type {
-                return true
-            }
-        case .err:
-            if case .err = type {
-                return true
-            }
-        case .info:
-            if case .info = type {
-                return true
-            }
-        case .loading:
-            if case .loading = type {
-                return true
-            }
+
+    public static func == (lhs: MarkType, rhs: MarkType) -> Bool {
+        switch (lhs, rhs) {
+        case (.loading, .loading), (.done, .done), (.err, .err), (.info, .info):
+            return true
+        case (.custom(let lImage, let lMode), .custom(let rImage, let rMode)) where lImage == rImage && lMode == rMode:
+            return true
+        default:
+            return false
         }
-        
-        return false
     }
     
     private func infoImage(tintColor: UIColor?) -> UIImage? {

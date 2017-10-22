@@ -39,8 +39,6 @@ class ViewController: UIViewController {
         case 0:
             AppProgress.setBackgroundStyle(style: .full)
         case 1:
-            AppProgress.setBackgroundStyle(style: .basic)
-        case 2:
             AppProgress.setBackgroundStyle(style: .none)
         default:
             break
