@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import AppProgress
 
 extension AppProgress {
     static func show(string: String = "") {

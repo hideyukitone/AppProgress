@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AppProgress
 
 class SecondViewController: UIViewController {
 
