@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StringLabel: UILabel, ViewReleasable {
+final class StringLabel: UILabel, ViewReleasable {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }

@@ -29,8 +29,8 @@
 		8781610920B01EBC00C461BC /* ViewReleasable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609420B00D7C00C461BC /* ViewReleasable.swift */; };
 		8781610A20B01EBC00C461BC /* AnimationDelayable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609620B00DAF00C461BC /* AnimationDelayable.swift */; };
 		8781610B20B01EC000C461BC /* MarkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609820B00E8600C461BC /* MarkType.swift */; };
-		8781610C20B01EC000C461BC /* AppProgressBackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609F20B010A400C461BC /* AppProgressBackgroundStyle.swift */; };
-		8781610D20B01EC000C461BC /* AppProgressColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160A120B010E300C461BC /* AppProgressColor.swift */; };
+		8781610C20B01EC000C461BC /* BackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609F20B010A400C461BC /* BackgroundStyle.swift */; };
+		8781610D20B01EC000C461BC /* ColorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160A120B010E300C461BC /* ColorType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,8 +90,8 @@
 		8781609620B00DAF00C461BC /* AnimationDelayable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationDelayable.swift; sourceTree = "<group>"; };
 		8781609820B00E8600C461BC /* MarkType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkType.swift; sourceTree = "<group>"; };
 		8781609A20B00F2100C461BC /* StringLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringLabel.swift; sourceTree = "<group>"; };
-		8781609F20B010A400C461BC /* AppProgressBackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProgressBackgroundStyle.swift; sourceTree = "<group>"; };
-		878160A120B010E300C461BC /* AppProgressColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProgressColor.swift; sourceTree = "<group>"; };
+		8781609F20B010A400C461BC /* BackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyle.swift; sourceTree = "<group>"; };
+		878160A120B010E300C461BC /* ColorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorType.swift; sourceTree = "<group>"; };
 		878160A820B01A8400C461BC /* AppProgress.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppProgress.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		878160B020B01A8400C461BC /* AppProgressTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppProgressTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		878160B720B01A8500C461BC /* AppProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProgressTests.swift; sourceTree = "<group>"; };
@@ -197,8 +197,8 @@
 			isa = PBXGroup;
 			children = (
 				8781609820B00E8600C461BC /* MarkType.swift */,
-				8781609F20B010A400C461BC /* AppProgressBackgroundStyle.swift */,
-				878160A120B010E300C461BC /* AppProgressColor.swift */,
+				8781609F20B010A400C461BC /* BackgroundStyle.swift */,
+				878160A120B010E300C461BC /* ColorType.swift */,
 			);
 			path = Enum;
 			sourceTree = "<group>";
@@ -391,12 +391,12 @@
 				878160C620B01C1800C461BC /* AppProgress.swift in Sources */,
 				8781610420B01EA800C461BC /* AppProgressView.swift in Sources */,
 				8781610520B01EAC00C461BC /* MarkView.swift in Sources */,
-				8781610D20B01EC000C461BC /* AppProgressColor.swift in Sources */,
+				8781610D20B01EC000C461BC /* ColorType.swift in Sources */,
 				8781610820B01EBC00C461BC /* ViewRotationable.swift in Sources */,
 				8781610620B01EB200C461BC /* StringLabel.swift in Sources */,
 				8781610B20B01EC000C461BC /* MarkType.swift in Sources */,
 				8781610A20B01EBC00C461BC /* AnimationDelayable.swift in Sources */,
-				8781610C20B01EC000C461BC /* AppProgressBackgroundStyle.swift in Sources */,
+				8781610C20B01EC000C461BC /* BackgroundStyle.swift in Sources */,
 				8781610920B01EBC00C461BC /* ViewReleasable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

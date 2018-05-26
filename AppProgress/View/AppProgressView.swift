@@ -8,8 +8,8 @@
 
 import UIKit
 
-extension AppProgressView {
-    private struct SettingInformation: Equatable {
+private extension AppProgressView {
+    struct SettingInformation: Equatable {
         let id = UUID().uuidString
         let mark: MarkType
         let string: String
@@ -21,13 +21,6 @@ extension AppProgressView {
             self.string = string
             self.colorType = colorType
             self.backgroundStyle = backgroundStyle
-        }
-
-        public static func == (lhs: SettingInformation, rhs: SettingInformation) -> Bool {
-            return lhs.mark == rhs.mark &&
-                lhs.string == rhs.string &&
-                lhs.colorType == rhs.colorType &&
-                lhs.backgroundStyle == rhs.backgroundStyle
         }
 
         var markImageSize: CGSize {

@@ -1,5 +1,5 @@
 //
-//  AppProgressColor.swift
+//  ColorType.swift
 //  AppProgress
 //
 //  Created by 大國嗣元 on 2018/05/19.
@@ -14,11 +14,7 @@ public extension AppProgress {
         case whiteAndBlack
         case grayAndWhite
         case lightGrayAndWhite
-        case custom(UIColor, UIColor) //(tintColor, backgroundColor)
-
-        public static func == (lhs: ColorType, rhs: ColorType) -> Bool {
-            return lhs.tintColor == rhs.tintColor && lhs.backgroundColor == rhs.backgroundColor
-        }
+        case custom(tintColor: UIColor, backgroundColor: UIColor)
 
         var tintColor: UIColor? {
             switch self {
