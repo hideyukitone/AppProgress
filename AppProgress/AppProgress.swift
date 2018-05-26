@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 open class AppProgress {
-    private static var colorType: AppProgressColor?
-    private static var backgroundStyle: AppProgressBackgroundStyle?
+    private static var colorType: ColorType?
+    private static var backgroundStyle: BackgroundStyle?
     private static var minimumDismissTimeInterval: TimeInterval?
     private static var appProgressView: AppProgressView?
     
@@ -44,11 +44,11 @@ open class AppProgress {
 }
 
 extension AppProgress {
-    open static func setColorType(type: AppProgressColor) {
+    open static func setColorType(type: ColorType) {
         colorType = type
     }
 
-    open static func setBackgroundStyle(style: AppProgressBackgroundStyle) {
+    open static func setBackgroundStyle(style: BackgroundStyle) {
         backgroundStyle = style
     }
 

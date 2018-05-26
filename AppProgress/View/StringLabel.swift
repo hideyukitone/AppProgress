@@ -26,7 +26,7 @@ class StringLabel: UILabel, ViewReleasable {
 
     private var widthLabelAnchor: NSLayoutConstraint?
     private var heightLabelAnchor: NSLayoutConstraint?
-    func setAnchor(spaceMarkAndLabel: CGFloat, markImageSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, viewSize: CGSize) {
+    func setAnchor(spaceMarkAndLabel: CGFloat, markImageSize: CGSize, backgroundStyle: AppProgress.BackgroundStyle, viewSize: CGSize) {
         guard let backgroundView = self.superview else { return }
 
         self.frame.size = .zero

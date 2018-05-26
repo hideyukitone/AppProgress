@@ -21,7 +21,7 @@
 		878160C620B01C1800C461BC /* AppProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C471DCC77DC0001080D /* AppProgress.swift */; };
 		878160FB20B01DC000C461BC /* AppProgress+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160FA20B01DC000C461BC /* AppProgress+.swift */; };
 		8781610220B01E9300C461BC /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8781610020B01E9300C461BC /* Info.plist */; };
-		8781610320B01E9300C461BC /* AppProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = 8781610120B01E9300C461BC /* AppProgress.h */; };
+		8781610320B01E9300C461BC /* AppProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = 8781610120B01E9300C461BC /* AppProgress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8781610420B01EA800C461BC /* AppProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781608C20B00BED00C461BC /* AppProgressView.swift */; };
 		8781610520B01EAC00C461BC /* MarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781608E20B00C6F00C461BC /* MarkView.swift */; };
 		8781610620B01EB200C461BC /* StringLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609A20B00F2100C461BC /* StringLabel.swift */; };
@@ -612,7 +612,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = AppProgress/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -644,7 +644,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = AppProgress/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
