@@ -74,3 +74,18 @@ AppProgress.err(view: view)
 ```ruby
 AppProgress.info(view: view)
 ```
+
+## メソッド
+```ruby
+open static func set(colorType: ColorType)
+open static func set(backgroundStyle: BackgroundStyle)
+open static func set(minimumDismissTimeInterval: TimeInterval)
+
+open static func show(view: UIView, string: String = "")
+open static func done(view: UIView, string: String = "", completion: (() -> Void)? = nil)
+open static func info(view: UIView, string: String = "", completion: (() -> Void)? = nil)
+open static func err(view: UIView, string: String = "", completion: (() -> Void)? = nil)
+open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil)
+
+open static func dismiss(completion: (() -> Void)? = nil)
+```
