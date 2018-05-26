@@ -44,16 +44,16 @@ open class AppProgress {
 }
 
 extension AppProgress {
-    open static func setColorType(type: ColorType) {
-        colorType = type
+    open static func set(colorType: ColorType) {
+        self.colorType = colorType
     }
 
-    open static func setBackgroundStyle(style: BackgroundStyle) {
-        backgroundStyle = style
+    open static func set(backgroundStyle: BackgroundStyle) {
+        self.backgroundStyle = backgroundStyle
     }
 
-    open static func setMinimumDismissTimeInterval(timeInterval: TimeInterval) {
-        minimumDismissTimeInterval = timeInterval
+    open static func set(minimumDismissTimeInterval: TimeInterval) {
+        self.minimumDismissTimeInterval = minimumDismissTimeInterval
     }
 
     open static func show(view: UIView, string: String = "") {
