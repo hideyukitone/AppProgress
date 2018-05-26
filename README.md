@@ -1,14 +1,19 @@
 # AppProgress
-Appleらしいローディングができます
+Appleらしいローディングができます。
 
-## show
+<image src="https://user-images.githubusercontent.com/11258432/40573794-d5d4ffc2-6101-11e8-950c-db5545dea18a.gif" width="300">
+  
+## 使い方
+App Extensionでも使えるように表示させるviewを渡すようにしています。
+
+### show
 ![AppProgress](https://user-images.githubusercontent.com/11258432/40573454-dc2e3208-60fc-11e8-8e0f-87952a46c10c.gif)
 
-## done
+### done
 ![done](https://user-images.githubusercontent.com/11258432/40573722-60877890-6100-11e8-97d4-694c51161b59.gif)
 
-## err
+### err
 ![error](https://user-images.githubusercontent.com/11258432/40573723-60ab03c8-6100-11e8-998f-ec5a34aa9024.gif)
 
-## info
+### info
 ![info](https://user-images.githubusercontent.com/11258432/40573724-60cdba6c-6100-11e8-9f1b-42f0dbd8cffc.gif)
