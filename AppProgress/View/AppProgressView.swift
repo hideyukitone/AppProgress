@@ -8,26 +8,19 @@
 
 import UIKit
 
-extension AppProgressView {
-    private struct SettingInformation: Equatable {
+private extension AppProgressView {
+    struct SettingInformation: Equatable {
         let id = UUID().uuidString
         let mark: MarkType
         let string: String
-        let colorType: AppProgressColor
-        let backgroundStyle: AppProgressBackgroundStyle
+        let colorType: AppProgress.ColorType
+        let backgroundStyle: AppProgress.BackgroundStyle
 
-        init(mark: MarkType, string: String, colorType: AppProgressColor, backgroundStyle: AppProgressBackgroundStyle) {
+        init(mark: MarkType, string: String, colorType: AppProgress.ColorType, backgroundStyle: AppProgress.BackgroundStyle) {
             self.mark = mark
             self.string = string
             self.colorType = colorType
             self.backgroundStyle = backgroundStyle
-        }
-
-        public static func == (lhs: SettingInformation, rhs: SettingInformation) -> Bool {
-            return lhs.mark == rhs.mark &&
-                lhs.string == rhs.string &&
-                lhs.colorType == rhs.colorType &&
-                lhs.backgroundStyle == rhs.backgroundStyle
         }
 
         var markImageSize: CGSize {
@@ -50,12 +43,12 @@ final class AppProgressView: UIView {
     private var backgroundView: BackgroundView?
     private var stringLabel: StringLabel?
     private var markView: MarkView?
-    private var colorType = AppProgressColor.whiteAndBlack
-    private var backgroundStyle = AppProgressBackgroundStyle.full
+    private var colorType = AppProgress.ColorType.whiteAndBlack
+    private var backgroundStyle = AppProgress.BackgroundStyle.full
     private var minimumDismissTimeInterval: TimeInterval = 0.5
     private var settingInfo: SettingInformation?
 
-    static func create(colorType: AppProgressColor?, backgroundStyle: AppProgressBackgroundStyle?, minimumDismissTimeInterval: TimeInterval?) -> AppProgressView {
+    static func create(colorType: AppProgress.ColorType?, backgroundStyle: AppProgress.BackgroundStyle?, minimumDismissTimeInterval: TimeInterval?) -> AppProgressView {
         let appProgressView = AppProgressView()
         if let colorType = colorType {
             appProgressView.colorType = colorType

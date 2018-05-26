@@ -19,7 +19,7 @@ final class BackgroundView: UIView, ViewReleasable, AnimationDelayable {
         self.isUserInteractionEnabled = false
     }
 
-    func setAnchor(markOriginalSize: CGSize, backgroundStyle: AppProgressBackgroundStyle, stringLabel: StringLabel) {
+    func setAnchor(markOriginalSize: CGSize, backgroundStyle: AppProgress.BackgroundStyle, stringLabel: StringLabel) {
         guard let view = self.superview else {
             return
         }

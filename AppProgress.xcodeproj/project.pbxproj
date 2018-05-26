@@ -20,8 +20,7 @@
 		878160BE20B01A8500C461BC /* AppProgress.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 878160A820B01A8400C461BC /* AppProgress.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		878160C620B01C1800C461BC /* AppProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C471DCC77DC0001080D /* AppProgress.swift */; };
 		878160FB20B01DC000C461BC /* AppProgress+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160FA20B01DC000C461BC /* AppProgress+.swift */; };
-		8781610220B01E9300C461BC /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8781610020B01E9300C461BC /* Info.plist */; };
-		8781610320B01E9300C461BC /* AppProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = 8781610120B01E9300C461BC /* AppProgress.h */; };
+		8781610320B01E9300C461BC /* AppProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = 8781610120B01E9300C461BC /* AppProgress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8781610420B01EA800C461BC /* AppProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781608C20B00BED00C461BC /* AppProgressView.swift */; };
 		8781610520B01EAC00C461BC /* MarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781608E20B00C6F00C461BC /* MarkView.swift */; };
 		8781610620B01EB200C461BC /* StringLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609A20B00F2100C461BC /* StringLabel.swift */; };
@@ -30,8 +29,8 @@
 		8781610920B01EBC00C461BC /* ViewReleasable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609420B00D7C00C461BC /* ViewReleasable.swift */; };
 		8781610A20B01EBC00C461BC /* AnimationDelayable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609620B00DAF00C461BC /* AnimationDelayable.swift */; };
 		8781610B20B01EC000C461BC /* MarkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609820B00E8600C461BC /* MarkType.swift */; };
-		8781610C20B01EC000C461BC /* AppProgressBackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609F20B010A400C461BC /* AppProgressBackgroundStyle.swift */; };
-		8781610D20B01EC000C461BC /* AppProgressColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160A120B010E300C461BC /* AppProgressColor.swift */; };
+		8781610C20B01EC000C461BC /* BackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609F20B010A400C461BC /* BackgroundStyle.swift */; };
+		8781610D20B01EC000C461BC /* ColorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160A120B010E300C461BC /* ColorType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,8 +90,8 @@
 		8781609620B00DAF00C461BC /* AnimationDelayable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationDelayable.swift; sourceTree = "<group>"; };
 		8781609820B00E8600C461BC /* MarkType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkType.swift; sourceTree = "<group>"; };
 		8781609A20B00F2100C461BC /* StringLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringLabel.swift; sourceTree = "<group>"; };
-		8781609F20B010A400C461BC /* AppProgressBackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProgressBackgroundStyle.swift; sourceTree = "<group>"; };
-		878160A120B010E300C461BC /* AppProgressColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProgressColor.swift; sourceTree = "<group>"; };
+		8781609F20B010A400C461BC /* BackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyle.swift; sourceTree = "<group>"; };
+		878160A120B010E300C461BC /* ColorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorType.swift; sourceTree = "<group>"; };
 		878160A820B01A8400C461BC /* AppProgress.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppProgress.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		878160B020B01A8400C461BC /* AppProgressTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppProgressTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		878160B720B01A8500C461BC /* AppProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProgressTests.swift; sourceTree = "<group>"; };
@@ -198,8 +197,8 @@
 			isa = PBXGroup;
 			children = (
 				8781609820B00E8600C461BC /* MarkType.swift */,
-				8781609F20B010A400C461BC /* AppProgressBackgroundStyle.swift */,
-				878160A120B010E300C461BC /* AppProgressColor.swift */,
+				8781609F20B010A400C461BC /* BackgroundStyle.swift */,
+				878160A120B010E300C461BC /* ColorType.swift */,
 			);
 			path = Enum;
 			sourceTree = "<group>";
@@ -303,7 +302,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = hideyuki;
 				TargetAttributes = {
 					87661C2F1DCC77B20001080D = {
@@ -359,7 +358,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8781610220B01E9300C461BC /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,12 +391,12 @@
 				878160C620B01C1800C461BC /* AppProgress.swift in Sources */,
 				8781610420B01EA800C461BC /* AppProgressView.swift in Sources */,
 				8781610520B01EAC00C461BC /* MarkView.swift in Sources */,
-				8781610D20B01EC000C461BC /* AppProgressColor.swift in Sources */,
+				8781610D20B01EC000C461BC /* ColorType.swift in Sources */,
 				8781610820B01EBC00C461BC /* ViewRotationable.swift in Sources */,
 				8781610620B01EB200C461BC /* StringLabel.swift in Sources */,
 				8781610B20B01EC000C461BC /* MarkType.swift in Sources */,
 				8781610A20B01EBC00C461BC /* AnimationDelayable.swift in Sources */,
-				8781610C20B01EC000C461BC /* AppProgressBackgroundStyle.swift in Sources */,
+				8781610C20B01EC000C461BC /* BackgroundStyle.swift in Sources */,
 				8781610920B01EBC00C461BC /* ViewReleasable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -464,6 +462,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -471,6 +470,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -498,7 +498,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -522,6 +522,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -529,6 +530,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -550,7 +552,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -601,7 +603,7 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -612,7 +614,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = AppProgress/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -633,7 +635,7 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -644,7 +646,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = AppProgress/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgress;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

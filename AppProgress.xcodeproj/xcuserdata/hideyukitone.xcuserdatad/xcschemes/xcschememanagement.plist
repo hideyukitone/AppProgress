@@ -14,10 +14,20 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>AppProgressTests.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>87661C2F1DCC77B20001080D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>878160A720B01A8400C461BC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
