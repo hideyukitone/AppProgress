@@ -8,6 +8,67 @@
 
 import UIKit
 
+open class AppProgressView: UIView {
+    private let fadeInAnimationDuration: TimeInterval = 0.15
+    private let fadeOutAnimationDuration: TimeInterval = 0.15
+    private var backgroundView: BackgroundView?
+    private var stringLabel: StringLabel?
+    private var markView: MarkView?
+    private var colorType = AppProgress.ColorType.whiteAndBlack
+    private var backgroundStyle = AppProgress.BackgroundStyle.full
+    private var minimumDismissTimeInterval: TimeInterval = 0.5
+    private var settingInfo: SettingInformation?
+}
+
+extension AppProgressView {
+    open static func create(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) -> AppProgressView {
+        let appProgressView = AppProgressView()
+        if let colorType = colorType {
+            appProgressView.colorType = colorType
+        }
+        if let backgroundStyle = backgroundStyle {
+            appProgressView.backgroundStyle = backgroundStyle
+        }
+        if let minimumDismissTimeInterval = minimumDismissTimeInterval {
+            appProgressView.minimumDismissTimeInterval = minimumDismissTimeInterval
+        }
+        return appProgressView
+    }
+
+    open func show(string: String = "") {
+        startRotation(type: .loading, string: string)
+    }
+
+    open func done(string: String = "", completion: (() -> Void)? = nil) {
+        startDismissAnimation(type: .done, string: string, completion: completion)
+    }
+
+    open func info(string: String = "", completion: (() -> Void)? = nil) {
+        startDismissAnimation(type: .info, string: string, completion: completion)
+    }
+
+    open func err(string: String = "", completion: (() -> Void)? = nil) {
+        startDismissAnimation(type: .err, string: string, completion: completion)
+    }
+
+    open func custom(image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
+        if isRotation {
+            startRotation(type: .custom(image, imageRenderingMode), string: string)
+        } else {
+            startDismissAnimation(type: .custom(image, imageRenderingMode), string: string, completion: completion)
+        }
+    }
+
+    open func dismiss(completion: (() -> Void)? = nil) {
+        UIView.animate(withDuration: fadeOutAnimationDuration, animations: { [weak self] in
+            self?.setAlpha(0)
+            }, completion: { [weak self] _ in
+                self?.remove()
+                completion?()
+        })
+    }
+}
+
 private extension AppProgressView {
     struct SettingInformation: Equatable {
         let id = UUID().uuidString
@@ -28,58 +89,29 @@ private extension AppProgressView {
             case .full, .none, .customFull( _, _, _, _):
                 return mark.size
             }
-
         }
 
         var spaceMarkAndLabel: CGFloat {
             return (mark.size.height - markImageSize.height) / 3
         }
     }
-}
 
-final class AppProgressView: UIView {
-    private let fadeInAnimationDuration: TimeInterval = 0.15
-    private let fadeOutAnimationDuration: TimeInterval = 0.15
-    private var backgroundView: BackgroundView?
-    private var stringLabel: StringLabel?
-    private var markView: MarkView?
-    private var colorType = AppProgress.ColorType.whiteAndBlack
-    private var backgroundStyle = AppProgress.BackgroundStyle.full
-    private var minimumDismissTimeInterval: TimeInterval = 0.5
-    private var settingInfo: SettingInformation?
-
-    static func create(colorType: AppProgress.ColorType?, backgroundStyle: AppProgress.BackgroundStyle?, minimumDismissTimeInterval: TimeInterval?) -> AppProgressView {
-        let appProgressView = AppProgressView()
-        if let colorType = colorType {
-            appProgressView.colorType = colorType
-        }
-        if let backgroundStyle = backgroundStyle {
-            appProgressView.backgroundStyle = backgroundStyle
-        }
-        if let minimumDismissTimeInterval = minimumDismissTimeInterval {
-            appProgressView.minimumDismissTimeInterval = minimumDismissTimeInterval
-        }
-        return appProgressView
-    }
-
-    func displayRotationAnimation(type: MarkType, string: String) {
+    func startRotation(type: MarkType, string: String) {
         let isEqual = settingInfo == SettingInformation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)
 
-        displayAnimation(type: type, string: string, isRotation: true, animations: { [weak self] in
+        start(type: type, string: string, isRotation: true, animations: { [weak self] in
             if !isEqual || self?.markView?.isRotationing != true {
                 self?.markView?.startRotation()
             }
-            }, completion: {
-
         })
     }
 
-    func displayAnimationWithDismiss(type: MarkType, string: String, completion: (() -> Void)? = nil) {
+    func startDismissAnimation(type: MarkType, string: String, completion: (() -> Void)?) {
         func dismissTimeInterval(string: String) -> TimeInterval {
             return max(TimeInterval(string.count) * TimeInterval(0.06) + TimeInterval(0.5), minimumDismissTimeInterval)
         }
 
-        displayAnimation(type: type, string: string, isRotation: false, animations: { [weak self] in
+        start(type: type, string: string, isRotation: false, animations: { [weak self] in
             guard let `self` = self else { return }
 
             if let count = self.markView?.animationImages?.count, count > 0 {
@@ -98,27 +130,15 @@ final class AppProgressView: UIView {
         })
     }
 
-    func dismiss(completion: (() -> Void)? = nil) {
-        UIView.animate(withDuration: fadeOutAnimationDuration, animations: { [weak self] in
-            self?.setAlpha(0)
-            }, completion: { [weak self] _ in
-                self?.remove()
-
-                completion?()
-        })
-    }
-
-    private func displayAnimation(
-        type: MarkType, string: String,
-        isRotation: Bool,
-        animations: @escaping () -> Void,
-        completion: @escaping () -> Void) {
-
+    func start(type: MarkType, string: String,
+                       isRotation: Bool,
+                       animations: @escaping () -> Void,
+                       completion: (() -> Void)? = nil) {
         let settingInfo = SettingInformation(mark: type, string: string, colorType: colorType, backgroundStyle: backgroundStyle)
 
         if self.settingInfo == settingInfo && (markView?.isRotationing ?? false) == isRotation {
             if let backgroundView = backgroundView {
-                backgroundView.superview?.bringSubview(toFront: backgroundView)
+                self.bringSubview(toFront: backgroundView)
             }
 
             return
@@ -133,7 +153,7 @@ final class AppProgressView: UIView {
 
         if isDisplaying {
             animations()
-            completion()
+            completion?()
         } else {
             setAlpha(0)
             backgroundView?.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
@@ -144,12 +164,12 @@ final class AppProgressView: UIView {
 
                 animations()
                 }, completion: { finished in
-                    completion()
+                    completion?()
             })
         }
     }
 
-    private func remove(isReleaseMarkView: Bool = true) {
+    func remove(isReleaseMarkView: Bool = true) {
         settingInfo = nil
 
         markView?.removeFromSuperview()
@@ -167,17 +187,17 @@ final class AppProgressView: UIView {
         stringLabel = nil
     }
 
-    private func setAlpha(_ alpha: CGFloat) {
+    func setAlpha(_ alpha: CGFloat) {
         markView?.alpha = alpha
         backgroundView?.alpha = alpha
         stringLabel?.alpha = alpha
     }
 
-    private func prepare() {
+    func prepare() {
         guard let settingInfo = settingInfo else { return }
 
         //アニメーションが続いていなければ再作成
-        if !(markView?.isRotationing ?? false) {
+        if markView?.isRotationing != true {
             markView = MarkView(type: settingInfo.mark, tintColor: colorType.tintColor)
         }
 
@@ -185,9 +205,7 @@ final class AppProgressView: UIView {
 
         stringLabel = StringLabel(string: settingInfo.string, tintColor: colorType.tintColor)
 
-        guard let markView = markView, let backgroundView = backgroundView, let stringLabel = stringLabel else {
-            return
-        }
+        guard let markView = markView, let backgroundView = backgroundView, let stringLabel = stringLabel else { return }
 
         self.addSubview(backgroundView)
         backgroundView.addSubview(markView)
@@ -199,16 +217,17 @@ final class AppProgressView: UIView {
         self.isUserInteractionEnabled = settingInfo.backgroundStyle != .none
     }
 
-    private func setAnchor() {
-        guard let settingInfo = settingInfo, let markView = markView, let backgroundView = backgroundView, let stringLabel = stringLabel, let view = backgroundView.superview else {
-            return
-        }
+    func setAnchor() {
+        guard let settingInfo = settingInfo,
+            let markView = markView,
+            let backgroundView = backgroundView,
+            let stringLabel = stringLabel else { return }
 
-        stringLabel.setAnchor(spaceMarkAndLabel: settingInfo.spaceMarkAndLabel, markImageSize: settingInfo.markImageSize, backgroundStyle: settingInfo.backgroundStyle, viewSize: view.frame.size)
+        stringLabel.setAnchor(backgroundView: backgroundView, spaceMarkAndLabel: settingInfo.spaceMarkAndLabel, markImageSize: settingInfo.markImageSize, backgroundStyle: settingInfo.backgroundStyle, viewSize: self.frame.size)
 
-        backgroundView.setAnchor(markOriginalSize: settingInfo.mark.size, backgroundStyle: settingInfo.backgroundStyle, stringLabel: stringLabel)
+        backgroundView.setAnchor(view: self, markOriginalSize: settingInfo.mark.size, backgroundStyle: settingInfo.backgroundStyle, stringLabel: stringLabel)
 
-        markView.setAnchor(spaceMarkAndLabel: settingInfo.spaceMarkAndLabel, markImageSize: settingInfo.markImageSize, stringLabel: stringLabel)
+        markView.setAnchor(backgroundView: backgroundView, spaceMarkAndLabel: settingInfo.spaceMarkAndLabel, markImageSize: settingInfo.markImageSize, stringLabel: stringLabel)
     }
 }
 

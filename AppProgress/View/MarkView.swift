@@ -35,9 +35,7 @@ final class MarkView: UIImageView, ViewRotationable, ViewReleasable {
     private var widthMarkLayoutConstraint: NSLayoutConstraint?
     private var heightMarkLayoutConstraint: NSLayoutConstraint?
 
-    func setAnchor(spaceMarkAndLabel: CGFloat, markImageSize: CGSize, stringLabel: StringLabel) {
-        guard let backgroundView = self.superview else { return }
-
+    func setAnchor(backgroundView: UIView, spaceMarkAndLabel: CGFloat, markImageSize: CGSize, stringLabel: StringLabel) {
         self.translatesAutoresizingMaskIntoConstraints = false
 
         self.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
