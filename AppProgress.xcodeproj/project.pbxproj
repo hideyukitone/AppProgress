@@ -14,8 +14,6 @@
 		87661C3E1DCC77B20001080D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87661C3C1DCC77B20001080D /* LaunchScreen.storyboard */; };
 		87661C501DCC823B0001080D /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C4F1DCC823B0001080D /* SecondViewController.swift */; };
 		87661C521DCC83130001080D /* ThirdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C511DCC83130001080D /* ThirdViewController.swift */; };
-		878160B120B01A8400C461BC /* AppProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 878160A820B01A8400C461BC /* AppProgress.framework */; };
-		878160B820B01A8500C461BC /* AppProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160B720B01A8500C461BC /* AppProgressTests.swift */; };
 		878160BD20B01A8500C461BC /* AppProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 878160A820B01A8400C461BC /* AppProgress.framework */; };
 		878160BE20B01A8500C461BC /* AppProgress.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 878160A820B01A8400C461BC /* AppProgress.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		878160C620B01C1800C461BC /* AppProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C471DCC77DC0001080D /* AppProgress.swift */; };
@@ -34,20 +32,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		878160B220B01A8400C461BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 87661C281DCC77B20001080D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 878160A720B01A8400C461BC;
-			remoteInfo = AppProgress;
-		};
-		878160B420B01A8400C461BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 87661C281DCC77B20001080D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 87661C2F1DCC77B20001080D;
-			remoteInfo = AppProgress1;
-		};
 		878160BB20B01A8500C461BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 87661C281DCC77B20001080D /* Project object */;
@@ -93,9 +77,6 @@
 		8781609F20B010A400C461BC /* BackgroundStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundStyle.swift; sourceTree = "<group>"; };
 		878160A120B010E300C461BC /* ColorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorType.swift; sourceTree = "<group>"; };
 		878160A820B01A8400C461BC /* AppProgress.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppProgress.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		878160B020B01A8400C461BC /* AppProgressTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppProgressTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		878160B720B01A8500C461BC /* AppProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProgressTests.swift; sourceTree = "<group>"; };
-		878160B920B01A8500C461BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		878160FA20B01DC000C461BC /* AppProgress+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppProgress+.swift"; sourceTree = "<group>"; };
 		8781610020B01E9300C461BC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8781610120B01E9300C461BC /* AppProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppProgress.h; sourceTree = "<group>"; };
@@ -117,14 +98,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		878160AD20B01A8400C461BC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				878160B120B01A8400C461BC /* AppProgress.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -141,9 +114,8 @@
 		87661C271DCC77B20001080D = {
 			isa = PBXGroup;
 			children = (
-				87661C321DCC77B20001080D /* AppProgressSample */,
 				878160A920B01A8400C461BC /* AppProgress */,
-				878160B620B01A8400C461BC /* AppProgressTests */,
+				87661C321DCC77B20001080D /* AppProgressSample */,
 				87661C311DCC77B20001080D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -153,7 +125,6 @@
 			children = (
 				87661C301DCC77B20001080D /* AppProgressSample.app */,
 				878160A820B01A8400C461BC /* AppProgress.framework */,
-				878160B020B01A8400C461BC /* AppProgressTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -216,15 +187,6 @@
 			path = AppProgress;
 			sourceTree = "<group>";
 		};
-		878160B620B01A8400C461BC /* AppProgressTests */ = {
-			isa = PBXGroup;
-			children = (
-				878160B720B01A8500C461BC /* AppProgressTests.swift */,
-				878160B920B01A8500C461BC /* Info.plist */,
-			);
-			path = AppProgressTests;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -276,25 +238,6 @@
 			productReference = 878160A820B01A8400C461BC /* AppProgress.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		878160AF20B01A8400C461BC /* AppProgressTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 878160C320B01A8500C461BC /* Build configuration list for PBXNativeTarget "AppProgressTests" */;
-			buildPhases = (
-				878160AC20B01A8400C461BC /* Sources */,
-				878160AD20B01A8400C461BC /* Frameworks */,
-				878160AE20B01A8400C461BC /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				878160B320B01A8400C461BC /* PBXTargetDependency */,
-				878160B520B01A8400C461BC /* PBXTargetDependency */,
-			);
-			name = AppProgressTests;
-			productName = AppProgressTests;
-			productReference = 878160B020B01A8400C461BC /* AppProgressTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -315,12 +258,6 @@
 						DevelopmentTeam = M2CCPT32P8;
 						ProvisioningStyle = Automatic;
 					};
-					878160AF20B01A8400C461BC = {
-						CreatedOnToolsVersion = 9.3.1;
-						DevelopmentTeam = M2CCPT32P8;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 87661C2F1DCC77B20001080D;
-					};
 				};
 			};
 			buildConfigurationList = 87661C2B1DCC77B20001080D /* Build configuration list for PBXProject "AppProgress" */;
@@ -336,9 +273,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				87661C2F1DCC77B20001080D /* AppProgressSample */,
 				878160A720B01A8400C461BC /* AppProgress */,
-				878160AF20B01A8400C461BC /* AppProgressTests */,
+				87661C2F1DCC77B20001080D /* AppProgressSample */,
 			);
 		};
 /* End PBXProject section */
@@ -355,13 +291,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		878160A620B01A8400C461BC /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		878160AE20B01A8400C461BC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -401,27 +330,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		878160AC20B01A8400C461BC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				878160B820B01A8500C461BC /* AppProgressTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		878160B320B01A8400C461BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 878160A720B01A8400C461BC /* AppProgress */;
-			targetProxy = 878160B220B01A8400C461BC /* PBXContainerItemProxy */;
-		};
-		878160B520B01A8400C461BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 87661C2F1DCC77B20001080D /* AppProgressSample */;
-			targetProxy = 878160B420B01A8400C461BC /* PBXContainerItemProxy */;
-		};
 		878160BC20B01A8500C461BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 878160A720B01A8400C461BC /* AppProgress */;
@@ -658,56 +569,6 @@
 			};
 			name = Release;
 		};
-		878160C420B01A8500C461BC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = M2CCPT32P8;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = AppProgressTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgressTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppProgress1.app/AppProgress1";
-			};
-			name = Debug;
-		};
-		878160C520B01A8500C461BC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = M2CCPT32P8;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = AppProgressTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = hideyuki.okuni.AppProgressTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppProgress1.app/AppProgress1";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -734,15 +595,6 @@
 			buildConfigurations = (
 				878160C020B01A8500C461BC /* Debug */,
 				878160C120B01A8500C461BC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		878160C320B01A8500C461BC /* Build configuration list for PBXNativeTarget "AppProgressTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				878160C420B01A8500C461BC /* Debug */,
-				878160C520B01A8500C461BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
