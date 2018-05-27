@@ -89,3 +89,6 @@ open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIIma
 
 open static func dismiss(completion: (() -> Void)? = nil)
 ```
+
+## License
+MIT
