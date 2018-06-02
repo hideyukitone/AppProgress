@@ -17,7 +17,6 @@
 		878160BD20B01A8500C461BC /* AppProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 878160A820B01A8400C461BC /* AppProgress.framework */; };
 		878160BE20B01A8500C461BC /* AppProgress.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 878160A820B01A8400C461BC /* AppProgress.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		878160C620B01C1800C461BC /* AppProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87661C471DCC77DC0001080D /* AppProgress.swift */; };
-		878160FB20B01DC000C461BC /* AppProgress+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160FA20B01DC000C461BC /* AppProgress+.swift */; };
 		8781610320B01E9300C461BC /* AppProgress.h in Headers */ = {isa = PBXBuildFile; fileRef = 8781610120B01E9300C461BC /* AppProgress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8781610420B01EA800C461BC /* AppProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781608C20B00BED00C461BC /* AppProgressView.swift */; };
 		8781610520B01EAC00C461BC /* MarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781608E20B00C6F00C461BC /* MarkView.swift */; };
@@ -29,6 +28,7 @@
 		8781610B20B01EC000C461BC /* MarkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609820B00E8600C461BC /* MarkType.swift */; };
 		8781610C20B01EC000C461BC /* BackgroundStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781609F20B010A400C461BC /* BackgroundStyle.swift */; };
 		8781610D20B01EC000C461BC /* ColorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160A120B010E300C461BC /* ColorType.swift */; };
+		87C988AB20C2CAA800EBBEEB /* AppProgress+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 878160FA20B01DC000C461BC /* AppProgress+.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,7 +133,6 @@
 			isa = PBXGroup;
 			children = (
 				87661C331DCC77B20001080D /* AppDelegate.swift */,
-				878160FA20B01DC000C461BC /* AppProgress+.swift */,
 				875ADE2C1DCCB7E5002693BF /* ViewController */,
 				87661C371DCC77B20001080D /* Main.storyboard */,
 				87661C3A1DCC77B20001080D /* Assets.xcassets */,
@@ -183,8 +182,17 @@
 				8781609C20B00F5F00C461BC /* View */,
 				8781609D20B00F7300C461BC /* Protocol */,
 				8781609E20B0109800C461BC /* Enum */,
+				87C988AA20C2CA8E00EBBEEB /* Extension */,
 			);
 			path = AppProgress;
+			sourceTree = "<group>";
+		};
+		87C988AA20C2CA8E00EBBEEB /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				878160FA20B01DC000C461BC /* AppProgress+.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,7 +312,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				878160FB20B01DC000C461BC /* AppProgress+.swift in Sources */,
 				87661C361DCC77B20001080D /* ViewController.swift in Sources */,
 				87661C501DCC823B0001080D /* SecondViewController.swift in Sources */,
 				87661C521DCC83130001080D /* ThirdViewController.swift in Sources */,
@@ -326,6 +333,7 @@
 				8781610B20B01EC000C461BC /* MarkType.swift in Sources */,
 				8781610A20B01EBC00C461BC /* AnimationDelayable.swift in Sources */,
 				8781610C20B01EC000C461BC /* BackgroundStyle.swift in Sources */,
+				87C988AB20C2CAA800EBBEEB /* AppProgress+.swift in Sources */,
 				8781610920B01EBC00C461BC /* ViewReleasable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
