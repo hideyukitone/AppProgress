@@ -7,9 +7,8 @@
 
 import Foundation
 import UIKit
-import AppProgress
 
-extension AppProgress {
+public extension AppProgress {
     static func show(string: String = "") {
         guard let window = window else { return }
         
@@ -39,12 +38,14 @@ extension AppProgress {
         
         custom(view: window, image: image, imageRenderingMode: imageRenderingMode, string: string, isRotation: isRotation, completion: completion)
     }
-    
-    private static var window: UIWindow? {
+}
+
+private extension AppProgress {
+    static var window: UIWindow? {
         for window in UIApplication.shared.windows where !window.isHidden && window.alpha > 0 && window.screen == UIScreen.main && window.windowLevel == UIWindowLevelNormal {
             return window
         }
-        
+
         return nil
     }
 }

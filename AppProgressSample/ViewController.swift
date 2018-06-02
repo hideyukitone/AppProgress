@@ -47,11 +47,11 @@ final class ViewController: UIViewController {
     }
     
     @IBAction func pressCustom1(_ sender: UIButton) {
-        AppProgress.custom(image: UIImage(named: "basketball1"), imageRenderingMode: .alwaysOriginal, string: txtFree.text ?? "", isRotation: false)
+        AppProgress.custom(image: #imageLiteral(resourceName: "basketball1"), imageRenderingMode: .alwaysOriginal, string: txtFree.text ?? "", isRotation: false)
     }
     
     @IBAction func pressCustom2(_ sender: UIButton) {
-        AppProgress.custom(image: UIImage(named: "basketball1"), imageRenderingMode: .alwaysOriginal, string: txtFree.text ?? "", isRotation: true)
+        AppProgress.custom(image: #imageLiteral(resourceName: "basketball1"), imageRenderingMode: .alwaysOriginal, string: txtFree.text ?? "", isRotation: true)
     }
     
     @IBAction func pressShow(_ sender: UIButton) {
