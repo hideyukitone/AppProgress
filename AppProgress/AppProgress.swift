@@ -15,27 +15,27 @@ open class AppProgress {
     private static var appProgressView: AppProgressView?
 }
 
-extension AppProgress {
-    open static func set(colorType: ColorType) {
+public extension AppProgress {
+    static func set(colorType: ColorType) {
         self.colorType = colorType
     }
 
-    open static func set(backgroundStyle: BackgroundStyle) {
+    static func set(backgroundStyle: BackgroundStyle) {
         self.backgroundStyle = backgroundStyle
     }
 
-    open static func set(minimumDismissTimeInterval: TimeInterval) {
+    static func set(minimumDismissTimeInterval: TimeInterval) {
         self.minimumDismissTimeInterval = minimumDismissTimeInterval
     }
 
-    open static func show(view: UIView, string: String = "") {
+    static func show(view: UIView, string: String = "") {
         syncMain {
             add(view: view)
             appProgressView?.show(string: string)
         }
     }
 
-    open static func done(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
+    static func done(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
         syncMain {
             add(view: view)
             appProgressView?.done(string: string, completion: {
@@ -45,7 +45,7 @@ extension AppProgress {
         }
     }
 
-    open static func info(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
+    static func info(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
         syncMain {
             add(view: view)
             appProgressView?.info(string: string, completion: {
@@ -55,7 +55,7 @@ extension AppProgress {
         }
     }
 
-    open static func err(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
+    static func err(view: UIView, string: String = "", completion: (() -> Void)? = nil) {
         syncMain {
             add(view: view)
             appProgressView?.err(string: string, completion: {
@@ -65,7 +65,7 @@ extension AppProgress {
         }
     }
 
-    open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
+    static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
         syncMain {
             add(view: view)
             appProgressView?.custom(image: image, imageRenderingMode: imageRenderingMode, string: string, isRotation: isRotation, completion: {
@@ -75,7 +75,7 @@ extension AppProgress {
         }
     }
 
-    open static func dismiss(completion: (() -> Void)? = nil) {
+    static func dismiss(completion: (() -> Void)? = nil) {
         syncMain {
             appProgressView?.dismiss(completion: {
                 remove()

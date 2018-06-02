@@ -18,16 +18,25 @@ open class AppProgressView: UIView {
     private var backgroundStyle = AppProgress.BackgroundStyle.full
     private var minimumDismissTimeInterval: TimeInterval = 0.5
     private var settingInfo: SettingInformation?
+
+    init(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) {
+        super.init(frame: .zero)
+        self.update(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
+    }
+
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
 }
 
-extension AppProgressView {
-    open static func create(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) -> AppProgressView {
+public extension AppProgressView {
+    static func create(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) -> AppProgressView {
         let appProgressView = AppProgressView()
         appProgressView.update(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
         return appProgressView
     }
 
-    open func add(to view: UIView) {
+    func add(to view: UIView) {
         view.addSubview(self)
         self.translatesAutoresizingMaskIntoConstraints = false
         view.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
@@ -36,7 +45,7 @@ extension AppProgressView {
         view.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
     }
 
-    open func update(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) {
+    func update(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) {
         if let colorType = colorType {
             self.colorType = colorType
         }
@@ -48,23 +57,23 @@ extension AppProgressView {
         }
     }
 
-    open func show(string: String = "") {
+    func show(string: String = "") {
         startRotation(type: .loading, string: string)
     }
 
-    open func done(string: String = "", completion: (() -> Void)? = nil) {
+    func done(string: String = "", completion: (() -> Void)? = nil) {
         startDismissAnimation(type: .done, string: string, completion: completion)
     }
 
-    open func info(string: String = "", completion: (() -> Void)? = nil) {
+    func info(string: String = "", completion: (() -> Void)? = nil) {
         startDismissAnimation(type: .info, string: string, completion: completion)
     }
 
-    open func err(string: String = "", completion: (() -> Void)? = nil) {
+    func err(string: String = "", completion: (() -> Void)? = nil) {
         startDismissAnimation(type: .err, string: string, completion: completion)
     }
 
-    open func custom(image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
+    func custom(image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
         if isRotation {
             startRotation(type: .custom(image, imageRenderingMode), string: string)
         } else {
@@ -72,7 +81,7 @@ extension AppProgressView {
         }
     }
 
-    open func dismiss(completion: (() -> Void)? = nil) {
+    func dismiss(completion: (() -> Void)? = nil) {
         UIView.animate(withDuration: fadeOutAnimationDuration, animations: { [weak self] in
             self?.setAlpha(0)
             }, completion: { [weak self] _ in
