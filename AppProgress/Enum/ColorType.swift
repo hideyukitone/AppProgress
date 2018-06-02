@@ -12,6 +12,7 @@ public extension AppProgress {
     public enum ColorType: Equatable {
         case blackAndWhite
         case whiteAndBlack
+        case whiteAndClear
         case grayAndWhite
         case lightGrayAndWhite
         case custom(tintColor: UIColor, backgroundColor: UIColor)
@@ -21,6 +22,8 @@ public extension AppProgress {
             case .grayAndWhite:
                 return #colorLiteral(red: 0.5176470588, green: 0.5176470588, blue: 0.5176470588, alpha: 1)
             case .whiteAndBlack:
+                return .white
+            case .whiteAndClear:
                 return .white
             case .lightGrayAndWhite:
                 return #colorLiteral(red: 0.6549019608, green: 0.6509803922, blue: 0.6509803922, alpha: 1)
@@ -37,6 +40,8 @@ public extension AppProgress {
                 return UIColor.white.withAlphaComponent(0.99)
             case .whiteAndBlack:
                 return #colorLiteral(red: 0.137254902, green: 0.137254902, blue: 0.137254902, alpha: 0.89)
+            case .whiteAndClear:
+                return .clear
             case .lightGrayAndWhite:
                 return UIColor.white.withAlphaComponent(0.99)
             case .blackAndWhite:

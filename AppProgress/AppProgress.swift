@@ -99,14 +99,7 @@ private extension AppProgress {
     static func add(view: UIView) {
         guard appProgressView == nil else { return }
         appProgressView = AppProgressView.create(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
-        if let appProgressView = appProgressView {
-            view.addSubview(appProgressView)
-            appProgressView.translatesAutoresizingMaskIntoConstraints = false
-            view.topAnchor.constraint(equalTo: appProgressView.topAnchor).isActive = true
-            view.bottomAnchor.constraint(equalTo: appProgressView.bottomAnchor).isActive = true
-            view.leadingAnchor.constraint(equalTo: appProgressView.leadingAnchor).isActive = true
-            view.trailingAnchor.constraint(equalTo: appProgressView.trailingAnchor).isActive = true
-        }
+        appProgressView?.add(to: view)
     }
 
     static func remove() {
