@@ -2,7 +2,14 @@
 Appleらしいローディングができます。
 
 <image src="https://user-images.githubusercontent.com/11258432/40573794-d5d4ffc2-6101-11e8-950c-db5545dea18a.gif" width="300">
-  
+
+## CocoaPods
+```
+use_frameworks!
+
+pod 'AppProgress'
+```
+
 ## 使い方
 App Extensionでも使えるようにするため、`UIApplication.shared.windows`から表示させるUIWindowを内部で取得せず、渡すようにしています。
 下記のようなextensionを作ると良いかと思います。
