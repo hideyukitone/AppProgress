@@ -198,6 +198,8 @@ private extension AppProgressView {
 
         stringLabel?.releaseAll()
         stringLabel = nil
+
+        self.isUserInteractionEnabled = false
     }
 
     func setAlpha(_ alpha: CGFloat) {
