@@ -10,76 +10,37 @@ use_frameworks!
 pod 'AppProgress'
 ```
 
-## 使い方
+#### App Extension
 App Extensionでも使えるようにするため、`UIApplication.shared.windows`から表示させるUIWindowを内部で取得せず、渡すようにしています。
-下記のようなextensionを作ると良いかと思います。
-```ruby
-import UIKit
-import AppProgress
+```
+use_frameworks!
 
-extension AppProgress {
-    static func show(string: String = "") {
-        guard let window = window else { return }
-        
-        show(view: window, string: string)
-    }
-    
-    static func done(string: String = "", completion: (() -> Void)? = nil) {
-        guard let window = window else { return }
-        
-        done(view: window, string: string, completion: completion)
-    }
-    
-    static func info(string: String = "", completion: (() -> Void)? = nil) {
-        guard let window = window else { return }
-        
-        info(view: window, string: string, completion: completion)
-    }
-    
-    static func err(string: String = "", completion: (() -> Void)? = nil) {
-        guard let window = window else { return }
-        
-        err(view: window, string: string, completion: completion)
-    }
-    
-    static func custom(image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil) {
-        guard let window = window else { return }
-        
-        custom(view: window, image: image, imageRenderingMode: imageRenderingMode, string: string, isRotation: isRotation, completion: completion)
-    }
-    
-    private static var window: UIWindow? {
-        for window in UIApplication.shared.windows where !window.isHidden && window.alpha > 0 && window.screen == UIScreen.main && window.windowLevel == UIWindowLevelNormal {
-            return window
-        }
-        
-        return nil
-    }
-}
+pod 'AppProgressCore'
 ```
 
+## 使い方
 ### show
 ![AppProgress](https://user-images.githubusercontent.com/11258432/40573454-dc2e3208-60fc-11e8-8e0f-87952a46c10c.gif)
 ```ruby
-AppProgress.show(view: view)
+AppProgress.show()
 ```
 
 ### done
 ![done](https://user-images.githubusercontent.com/11258432/40573722-60877890-6100-11e8-97d4-694c51161b59.gif)
 ```ruby
-AppProgress.done(view: view)
+AppProgress.done()
 ```
 
 ### err
 ![error](https://user-images.githubusercontent.com/11258432/40573723-60ab03c8-6100-11e8-998f-ec5a34aa9024.gif)
 ```ruby
-AppProgress.err(view: view)
+AppProgress.err()
 ```
 
 ### info
 ![info](https://user-images.githubusercontent.com/11258432/40573724-60cdba6c-6100-11e8-9f1b-42f0dbd8cffc.gif)
 ```ruby
-AppProgress.info(view: view)
+AppProgress.info()
 ```
 
 ## メソッド
@@ -88,11 +49,11 @@ open static func set(colorType: ColorType)
 open static func set(backgroundStyle: BackgroundStyle)
 open static func set(minimumDismissTimeInterval: TimeInterval)
 
-open static func show(view: UIView, string: String = "")
-open static func done(view: UIView, string: String = "", completion: (() -> Void)? = nil)
-open static func info(view: UIView, string: String = "", completion: (() -> Void)? = nil)
-open static func err(view: UIView, string: String = "", completion: (() -> Void)? = nil)
-open static func custom(view: UIView, image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil)
+open static func show(string: String = "")
+open static func done(string: String = "", completion: (() -> Void)? = nil)
+open static func info(string: String = "", completion: (() -> Void)? = nil)
+open static func err(string: String = "", completion: (() -> Void)? = nil)
+open static func custom(image: UIImage?, imageRenderingMode: UIImageRenderingMode = .alwaysTemplate, string: String = "", isRotation: Bool = false, completion: (() -> Void)? = nil)
 
 open static func dismiss(completion: (() -> Void)? = nil)
 ```
