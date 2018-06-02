@@ -21,11 +21,13 @@ open class AppProgressView: UIView {
 
     public init(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) {
         super.init(frame: .zero)
+        self.isUserInteractionEnabled = false
         self.update(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
     }
 
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        self.isUserInteractionEnabled = false
     }
 }
 
