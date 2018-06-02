@@ -23,16 +23,29 @@ open class AppProgressView: UIView {
 extension AppProgressView {
     open static func create(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) -> AppProgressView {
         let appProgressView = AppProgressView()
+        appProgressView.update(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
+        return appProgressView
+    }
+
+    open func add(to view: UIView) {
+        view.addSubview(self)
+        self.translatesAutoresizingMaskIntoConstraints = false
+        view.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        view.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        view.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        view.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+    }
+
+    open func update(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) {
         if let colorType = colorType {
-            appProgressView.colorType = colorType
+            self.colorType = colorType
         }
         if let backgroundStyle = backgroundStyle {
-            appProgressView.backgroundStyle = backgroundStyle
+            self.backgroundStyle = backgroundStyle
         }
         if let minimumDismissTimeInterval = minimumDismissTimeInterval {
-            appProgressView.minimumDismissTimeInterval = minimumDismissTimeInterval
+            self.minimumDismissTimeInterval = minimumDismissTimeInterval
         }
-        return appProgressView
     }
 
     open func show(string: String = "") {
