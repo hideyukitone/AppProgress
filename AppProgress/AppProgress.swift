@@ -98,7 +98,7 @@ private extension AppProgress {
 
     static func add(view: UIView) {
         guard appProgressView == nil else { return }
-        appProgressView = AppProgressView.create(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
+        appProgressView = AppProgressView(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
         appProgressView?.add(to: view)
     }
 

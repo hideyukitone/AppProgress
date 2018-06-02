@@ -19,7 +19,7 @@ open class AppProgressView: UIView {
     private var minimumDismissTimeInterval: TimeInterval = 0.5
     private var settingInfo: SettingInformation?
 
-    init(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) {
+    public init(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) {
         super.init(frame: .zero)
         self.update(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
     }
@@ -30,12 +30,6 @@ open class AppProgressView: UIView {
 }
 
 public extension AppProgressView {
-    static func create(colorType: AppProgress.ColorType? = nil, backgroundStyle: AppProgress.BackgroundStyle? = nil, minimumDismissTimeInterval: TimeInterval? = nil) -> AppProgressView {
-        let appProgressView = AppProgressView()
-        appProgressView.update(colorType: colorType, backgroundStyle: backgroundStyle, minimumDismissTimeInterval: minimumDismissTimeInterval)
-        return appProgressView
-    }
-
     func add(to view: UIView) {
         view.addSubview(self)
         self.translatesAutoresizingMaskIntoConstraints = false
